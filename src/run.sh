@@ -5,10 +5,10 @@ Training_Models=(
                 # "MogaNet" \
                 # "UNETR" \
                 # "UNETR_PP" \
-                "DCLA_UNet_v4"\
-                "ResUNetBaseline_S_SLK_MSF_v4"\
-                "ResUNetBaseline_S_SLK_DCLCA_MSF_v4"\
-                "ResUNetBaseline_S_SLK_DCLSA_MSF_v4"
+                "DCLA_UNet_v1"\
+                "ResUNetBaseline_S_SLK_MSF_v1"
+                "ResUNetBaseline_S_SLK_DCLCA_MSF_v1"
+                "ResUNetBaseline_S_SLK_DCLSA_MSF_v1"
                 # "ResUNetBaseline_S_SLK_LiteMSF"
                 # 'ResUNetBaseline_S_DCLA'\
                 # "ResUNetBaseline_S_SLK"                

@@ -17,10 +17,10 @@ Training_Models=(
                 # "ResUNetBaseline_S_DCLA"\
                 # 'ResUNetBaseline_S'\
                 # "ResUNetBaseline_S_LiteMSF"\
-                "DCLA_UNet_v4"\
-                "ResUNetBaseline_S_SLK_MSF_v4"
-                "ResUNetBaseline_S_SLK_DCLCA_MSF_v4"
-                "ResUNetBaseline_S_SLK_DCLSA_MSF_v4"
+                "DCLA_UNet_v1"\
+                "ResUNetBaseline_S_SLK_MSF_v1"
+                "ResUNetBaseline_S_SLK_DCLCA_MSF_v1"
+                "ResUNetBaseline_S_SLK_DCLSA_MSF_v1"
                 # "ResUNetBaseline_S_SLK"                
                 # 'ResUNetBaseline_S_DCLA_SLK'\
                 # 'ResUNetBaseline_S_DCLA_LiteMSF'\
