@@ -371,84 +371,119 @@ if __name__ == '__main__':
         'ckpt_path': None
     }
     
-    # ##! UNet3D
-    model = load_model('UNet3D')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]UNet3D_2025-03-29_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\UNet3D_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-
-    
-    # ##! AttUNet3D
-    model = load_model('AttUNet3D')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]AttUNet3D_2025-04-10_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\AttUNet3D_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-    
-    # ##! UNETR
-    model = load_model('UNETR')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]UNETR_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\UNETR_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-    
-
-    # ##! Mamba3D
-    model = load_model('Mamba3d')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]Mamba3d_2025-04-01_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch85_loss0.1296_dice0.8713_20250401063106.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-
-    # ##! MogaNet
-    model = load_model('MogaNet')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]MogaNet_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\MogaNet_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-
-    # ##! SegFormer3D
-    model = load_model('SegFormer3D')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]SegFormer3D_2025-03-31_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\SegFormer3D_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0)
-
-    # # ##! DCLA_UNet_v2
-    # model = load_model('DCLA_UNet_v2')
+    # # ##! UNet3D
+    # model = load_model('UNet3D')
     # unet_common_config.update(
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\20250503_0.866\【0.866】DCLA_UNet_2025-05-03_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]UNet3D_2025-03-29_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\UNet3D_final_model.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
+
+    
+    # # ##! AttUNet3D
+    # model = load_model('AttUNet3D')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]AttUNet3D_2025-04-10_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\AttUNet3D_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
+    
+    # # ##! UNETR
+    # model = load_model('UNETR')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]UNETR_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\UNETR_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
+    
+
+    # # ##! Mamba3D
+    # model = load_model('Mamba3d')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]Mamba3d_2025-04-01_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch85_loss0.1296_dice0.8713_20250401063106.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
+
+    # # ##! MogaNet
+    # model = load_model('MogaNet')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]MogaNet_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\MogaNet_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
+
+    # # ##! SegFormer3D
+    # model = load_model('SegFormer3D')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]SegFormer3D_2025-03-31_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\SegFormer3D_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
+
+
+    
+    # # ##! ResUNetBaseline_S
+    # model = load_model('ResUNetBaseline_S')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【S】Baseline\权重文件\【S】ResUNetBaseline_S_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # ##! DCLA_UNet_v2
+    model = load_model('DCLA_UNet_v2')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】DCLA_UNet_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # ##! ResUNetBaseline_S_SLK_v2
+    model = load_model('ResUNetBaseline_S_SLK_v2')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_v2_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # ##! ResUNetBaseline_S_DCLA_SLK_v2
+    model = load_model('ResUNetBaseline_S_DCLA_SLK_v2')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_DCLA_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLA_SLK_v2_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
     
     
     

@@ -9,6 +9,7 @@
 '''
 
 import os
+import time
 import torch
 import torch.nn as nn
 import argparse
@@ -19,13 +20,14 @@ from torch.utils.data import DataLoader
 from metrics import EvaluationMetrics
 from torch.amp import GradScaler
 from train_init import load_model, load_loss, load_optimizer, load_scheduler
-from utils.logger_tools import *
-from utils.shell_tools import *
-from utils.tb_tools import *
-from utils.ckpt_tools import *
-from utils.split_datasets import *
-from datasets.transforms import *
-from datasets.BraTS21 import BraTS21_3D
+# from utils.logger_tools import *
+# from utils.shell_tools import *
+# from utils.tb_tools import *
+# from utils.ckpt_tools import *
+# from utils.split_datasets import *
+
+from utils import *
+from datasets import *
 from lossFunc import *
 from metrics import *
 
@@ -305,9 +307,9 @@ if __name__ == '__main__':
     start_time = time.time()
     
     # 获取工作路径
-    ROOT = "/root/workspace/DCLA-UNet"                         #TODO: 切换机器需要更改
+    ROOT = "/root/workspace/DCLA_UNet"                         #TODO: 切换机器需要更改
     if not os.path.exists(ROOT):
-        ROOT = "/root/autodl-tmp/DCLA-UNet/"
+        ROOT = "/root/autodl-tmp/DCLA_UNet/"
     
     initial_parser = argparse.ArgumentParser(add_help=False)
     

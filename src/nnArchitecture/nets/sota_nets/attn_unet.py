@@ -18,7 +18,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 from utils.test_unet import test_unet
 
-from nnArchitecture.commons.init_weights_3d import init_weights_3d
+from nnArchitecture.commons import init_weights_3d
 
 class DoubleConv3D(nn.Module):
     """(conv3D -> BN -> ReLU) * 2"""

@@ -15,19 +15,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 import torch.nn.functional as F
-# from torch.nn import CrossEntropyLoss
-# from loss_function import Diceloss, crossEntropy_loss
-# from torch.nn import CrossEntropyLoss
-# from torchvision import transforms
-# from torch.utils.data import DataLoader
-
-# from torch.optim import Adam, SGD, RMSprop, AdamW
 from torch.amp import autocast
-
-# # 加载本地模块
-# from readDatasets.BraTS import BraTS21_3d
-# from nets.unet3ds import UNet_3d_22M_32, UNet_3d_22M_64, UNet_3d_48M, UNet_3d_90M, init_weights_light, init_weights_pro
-# from metrics import EvaluationMetrics
 
 # os.environ["CUDA_LAUNCH_BLOCKING"] = '1'
 best_val_loss = float('inf')

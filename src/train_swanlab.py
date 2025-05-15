@@ -164,6 +164,7 @@ def train(model, Metrics, train_loader,  val_loader, test_loader, scaler, optimi
             project=slb_project,
             experiment_name=slb_experiment,
             config=slb_config,
+            logdir='./logs'
         )
         swanlab_run.log({"model/summary": swanlab.Text(model_arch)})
         

@@ -16,6 +16,8 @@ from torch.optim import AdamW
 from lossFunc import *
 from metrics import *
 
+import os
+import sys
 
 # 消融实验网络
 from nnArchitecture.nets import *
@@ -59,15 +61,24 @@ def load_model(model_name):
         'DWResUNet':                            DWResUNet(in_channels=4, out_channels=4),
         'ResUNetBaseline_S':                    ResUNetBaseline_S(in_channels=4, out_channels=4),
         'ResUNetBaseline_M':                    ResUNetBaseline_M(in_channels=4, out_channels=4),
-        
-        #! DCLA_UNet v1 
-        'DCLA_UNet_v1':                        DCLA_UNet_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_v1':           ResUNetBaseline_S_DCLA_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_v1':           ResUNetBaseline_S_SLK_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_SLK_v1':       ResUNetBaseline_S_DCLA_SLK_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_LiteMSF_v1':       ResUNetBaseline_S_LiteMSF_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_LiteMSF_v1':   ResUNetBaseline_S_DCLA_LiteMSF_v1(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_LiteMSF_v1':    ResUNetBaseline_S_SLK_LiteMSF_v1(in_channels=4, out_channels=4),
+
+        #! DCLA_UNet v1
+        'DCLA_UNet_v1':                         DCLA_UNet_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_v1':            ResUNetBaseline_S_DCLA_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_v1':             ResUNetBaseline_S_SLK_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_SLK_v1':        ResUNetBaseline_S_DCLA_SLK_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_MSF_v1':             ResUNetBaseline_S_MSF_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_MSF_v1':        ResUNetBaseline_S_DCLA_MSF_v1(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_MSF_v1':         ResUNetBaseline_S_SLK_MSF_v1(in_channels=4, out_channels=4),        
+
+        #! DCLA_UNet v2
+        'DCLA_UNet_v2':                         DCLA_UNet_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_v2':            ResUNetBaseline_S_DCLA_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_v2':             ResUNetBaseline_S_SLK_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_SLK_v2':        ResUNetBaseline_S_DCLA_SLK_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_MSF_v2':             ResUNetBaseline_S_MSF_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_MSF_v2':        ResUNetBaseline_S_DCLA_MSF_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_MSF_v2':         ResUNetBaseline_S_SLK_MSF_v2(in_channels=4, out_channels=4),
     }
     # 加载模型
     
