@@ -2,16 +2,16 @@
 
 Training_Models=(
                 # SLKv2
-                "DCLA_UNet_v3"\
-                "ResUNetBaseline_S_SLK_v3"\
-                "ResUNetBaseline_S_DCLA_SLK_v3"\
-                "ResUNetBaseline_S_SLK_MSF_v3"\
+                # "DCLA_UNet_v2_2"\
+                # "ResUNetBaseline_S_SLKv2_v2"\
+                # "ResUNetBaseline_S_DCLA_SLKv2_v2"\
+                "ResUNetBaseline_S_SLKv2_MSF_v2"\
 
                 # DCLAv2
-                "DCLA_UNet_v4"\
-                "ResUNetBaseline_S_DCLA_v4"\
-                "ResUNetBaseline_S_DCLA_SLK_v4"\
-                "ResUNetBaseline_S_DCLA_MSF_v4"\
+                "DCLA_UNet_v2_3"\
+                "ResUNetBaseline_S_DCLAv1_v2"\
+                "ResUNetBaseline_S_DCLAv1_SLKv2_v2"\
+                "ResUNetBaseline_S_DCLAv1_MSF_v4"\
                 )
 
 
@@ -40,13 +40,13 @@ for model_name in "${Training_Models[@]}"; do
                    --val_length 60 \
                    --test_length 30 \
                    --epochs 10 \
-                   --batch_size 2 \
+                   --batch_size 1 \
                    --lr 1e-4 \
                    --wd 1e-5 \
                    --cosine_eta_min 1e-5 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
-                   --num_workers 8 \
+                   --num_workers 4 \
                    --interval 1 \
                    --slb_project $slb_project
 done

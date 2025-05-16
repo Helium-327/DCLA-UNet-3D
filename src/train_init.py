@@ -73,27 +73,23 @@ def load_model(model_name):
 
         #! DCLA_UNet v2
         'DCLA_UNet_v2':                         DCLA_UNet_v2(in_channels=4, out_channels=4),
+        'DCLA_UNet_v2_1':                       DCLA_UNet_v2_1(in_channels=4, out_channels=4),
+        'DCLA_UNet_v2_2':                       DCLA_UNet_v2_2(in_channels=4, out_channels=4),
+        'DCLA_UNet_v2_3':                       DCLA_UNet_v2_3(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_v2':            ResUNetBaseline_S_DCLA_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLAv1_v2':          ResUNetBaseline_S_DCLAv1_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_SLK_v2':             ResUNetBaseline_S_SLK_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLKv1_v2':           ResUNetBaseline_S_SLKv1_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLKv2_v2':           ResUNetBaseline_S_SLKv2_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_SLK_v2':        ResUNetBaseline_S_DCLA_SLK_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_SLKv1_v2':      ResUNetBaseline_S_DCLA_SLKv1_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_SLKv2_v2':      ResUNetBaseline_S_DCLA_SLKv2_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_MSF_v2':             ResUNetBaseline_S_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_MSF_v2':        ResUNetBaseline_S_DCLA_MSF_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLAv1_MSF_v2':      ResUNetBaseline_S_DCLAv1_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_SLK_MSF_v2':         ResUNetBaseline_S_SLK_MSF_v2(in_channels=4, out_channels=4),
-        
-        #! DCLA_UNet v3
-        'DCLA_UNet_v3':                         DCLA_UNet_v3(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_v3':             ResUNetBaseline_S_SLK_v3(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_SLK_v3':        ResUNetBaseline_S_DCLA_SLK_v3(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_MSF_v3':         ResUNetBaseline_S_SLK_MSF_v3(in_channels=4, out_channels=4),
-        
-        #! DCLA_UNet v4
-        'DCLA_UNet_v4':                         DCLA_UNet_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_v4':            ResUNetBaseline_S_DCLA_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_v4':             ResUNetBaseline_S_SLK_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_SLK_v4':        ResUNetBaseline_S_DCLA_SLK_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_MSF_v4':             ResUNetBaseline_S_MSF_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_DCLA_MSF_v4':        ResUNetBaseline_S_DCLA_MSF_v4(in_channels=4, out_channels=4),
-        'ResUNetBaseline_S_SLK_MSF_v4':         ResUNetBaseline_S_SLK_MSF_v4(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLKv1_MSF_v2':       ResUNetBaseline_S_SLKv1_MSF_v2(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLKv2_MSF_v2':       ResUNetBaseline_S_SLKv2_MSF_v2(in_channels=4, out_channels=4),
     }
     # 加载模型
     

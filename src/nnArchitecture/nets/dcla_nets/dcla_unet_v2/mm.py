@@ -49,6 +49,137 @@ class SlimLargeKernelBlock(nn.Module):
         out += self.residual(x)
         return self.act(out)
     
+#! 改进点1 更换编码器
+
+import math
+class SwishECA(nn.Module):
+    def __init__(self, channels, gamma=2, b=1):
+        super(SwishECA, self).__init__()
+        
+        # 创建一个自适应平均池化层和自适应最大池化层
+        self.avg_pool = nn.AdaptiveAvgPool3d(1)
+        self.max_pool = nn.AdaptiveMaxPool3d(1)
+        
+        # 动态计算1D卷积核大小 (保持原论文公式)
+        kernel_size = int(abs((math.log2(channels) + b) / gamma))
+        kernel_size = kernel_size if kernel_size % 2 else kernel_size + 1
+        
+        # 使用1D卷积进行通道注意力
+        self.ca = nn.Sequential(
+            nn.Conv1d(1, 1, kernel_size=kernel_size, padding=kernel_size//2, bias=False),
+            Swish(),
+            nn.Conv1d(1, 1, kernel_size=kernel_size, padding=kernel_size//2, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _, _ = x.shape
+        attn = self.ca((self.avg_pool(x) + self.max_pool(x)).view(b, 1, -1)).view(b, -1, 1, 1, 1)
+        return attn * x
+
+class ResBlockOfDepthwiseAxialConv3D(nn.Module):
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                 use_act = True,
+                 act_op = 'gelu',
+                ):
+        super().__init__()
+        self.use_act = use_act
+        self.conv = nn.Sequential(
+                DepthwiseAxialConv3d(
+                    in_channels,
+                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+                    kernel_size=kernel_size
+                ),
+                nn.BatchNorm3d(out_channels),
+        )
+        self.act = nn.GELU() if act_op == 'gelu' else nn.LeakyReLU()
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+    def forward(self, x):
+        out = self.conv(x)
+        out += self.residual(x)
+        return self.act(out)
+    
+class SlimLargeKernelBlockv1(nn.Module): 
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                ):
+        super().__init__()
+        
+        self.depthwise = nn.Sequential(
+            nn.Conv3d(in_channels,out_channels,kernel_size=1),
+            DepthwiseAxialConv3d(
+                    out_channels,
+                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+                    kernel_size=kernel_size
+                ),
+            nn.BatchNorm3d(out_channels),
+            nn.GELU(),
+            # SwishECA(out_channels),
+            DepthwiseAxialConv3d(
+                    out_channels,
+                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+                    kernel_size=kernel_size
+                ),
+            nn.BatchNorm3d(out_channels),
+        )
+        
+        self.act = nn.GELU() 
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+    def forward(self, x):
+        out = self.depthwise(x) + self.residual(x)
+        return self.act(out)
+    
+class ResMLP(nn.Module):
+    def __init__(self, 
+                 in_channels, 
+                 out_channels,
+                 ratio=4,
+                 reduce=True
+                ):
+        super().__init__()
+        
+        mid_channels = in_channels // ratio if reduce else in_channels * ratio
+        
+        self.mlp = nn.Sequential(
+            nn.Conv3d(in_channels, mid_channels, kernel_size=1),
+            nn.BatchNorm3d(mid_channels),
+            nn.GELU(),
+            nn.Conv3d(mid_channels,out_channels,kernel_size=1),
+            nn.BatchNorm3d(out_channels),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = nn.SiLU()
+    def forward(self, x):
+        out = self.mlp(x) + self.residual(x)
+        return self.act(out)
+        
+
+class SlimLargeKernelBlockv2(nn.Module): 
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                ):
+        super().__init__()
+        
+        self.depthwise = nn.Sequential(
+            ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size),
+            SwishECA(out_channels),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size=5),
+            ResMLP(out_channels, out_channels),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = nn.SiLU()
+    def forward(self, x):
+        out = self.depthwise(x) + self.residual(x)
+        return self.act(out)
     
 class MutilScaleFusionBlock(nn.Module): #(MLP)
     def __init__(self, 
@@ -265,6 +396,97 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         out = attn * x
         return out
     
+class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
+    def __init__(self, 
+                 ch_list, 
+                 feats_size, 
+                 min_size=8, 
+                 squeeze_kernel=3,
+                 down_kernel=[3,5,7], 
+                 fusion_kernel=1,
+                 fusion_mode='add',
+                 groups=4
+                 ):
+        """
+        Args: 
+            ch_list: 输入特征的通道数
+            feats_size: 输入特征的空间尺寸
+            min_size: 最小空间尺寸
+            kernel_size: 卷积核大小, 可以是一个整数或一个元组 (k1, k2, k3, k4)
+        """
+        super().__init__()
+        self.ch_list = ch_list
+        self.feats_size = feats_size
+        self.min_size = min_size
+        self.kernel_size = down_kernel if isinstance(down_kernel, list) else [down_kernel]
+        self.fusion_mode = fusion_mode
+        self.squeeze_layers = nn.ModuleList()
+        self.down_layers = nn.ModuleList()
+        
+        # if isinstance(self.kernel_size, int):
+        for ch in self.ch_list:
+            self.squeeze_layers.append(
+                #! 改进点2：添加分组注意力
+                nn.Sequential(
+                    nn.Conv3d(ch, ch//groups, kernel_size=squeeze_kernel, padding=squeeze_kernel//2, groups=groups),
+                    nn.GroupNorm(groups, ch//groups),
+                    nn.GELU(),
+                    nn.Conv3d(ch//groups, 1, kernel_size=1),
+                    nn.GELU()
+                    ))
+        for feat_size in feats_size:
+            self.down_layers.append(
+                AdaptiveSpatialCondenser(
+                    in_channels=1, 
+                    out_channels=1, 
+                    kernel_size=self.kernel_size, 
+                    in_size=feat_size, 
+                    min_size=8,
+                    fusion_mode=self.fusion_mode  # 'concat' or 'add'
+                )
+            )
+        self.conv = nn.Sequential(
+            nn.Conv3d(len(self.kernel_size),
+                      1, 
+                      kernel_size=1, 
+                      padding=0
+                      ),
+            nn.BatchNorm3d(1),
+            nn.GELU(),
+            nn.Conv3d(1, 1, kernel_size=1, padding=0)
+        )
+        self.fusion = nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2)
+
+    def forward(self, encoder_feats, x):
+        squeezed_feats = []
+        
+        # 压缩通道数
+        for i , squeeze_layer in enumerate(self.squeeze_layers):
+            squeezed_feats.append(squeeze_layer(encoder_feats[i]))
+
+        downs = []
+        
+        # 压缩空间维度
+        for i, feat in enumerate(squeezed_feats):
+            need_down = (feat.size(2) != self.min_size)
+            if need_down:
+                down_feat = self.down_layers[i](feat)
+            else:
+                down_feat = feat
+            if self.fusion_mode == 'concat':
+                down_feat = self.conv(down_feat)
+            elif self.fusion_mode == 'add':
+                down_feat = down_feat
+            else:
+                raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")
+            
+            downs.append(down_feat.squeeze(1))
+        # 特征融合
+        fused = self.fusion(torch.stack(downs, dim=1))
+        attn = torch.sigmoid(fused)
+        
+        out = attn * x
+        return out
 
 class DepthwiseAxialConv3d(nn.Module):
     """深度可分离轴向3D卷积（分XYZ三个轴向依次卷积）
