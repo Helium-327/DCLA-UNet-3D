@@ -15,7 +15,7 @@ Training_Models=(
                 )
 
 
-slb_project="0515_DCLA_UNet_v2"  #TODO: 填写训练的项目名称 (必填)
+slb_project="0510_DCLA_UNet_v2"  #TODO: 填写训练的项目名称 (必填)
 # 优先级判断
 if [ -z "$slb_project" ]; then  # 脚本变量未设置
     if [ $# -ge 1 ]; then       # 检查命令行参数
