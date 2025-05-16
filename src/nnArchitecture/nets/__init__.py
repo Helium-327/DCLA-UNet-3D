@@ -11,8 +11,8 @@ from .sota_nets import (
     UNETR,
     UNETR_PP,
     SegFormer3D,
-    # Mamba3d,
-    # MogaNet
+    Mamba3d,
+    MogaNet
 )
 from .dcla_nets import (
     DCLA_UNet_v1,
@@ -29,7 +29,15 @@ from .dcla_nets import (
     ResUNetBaseline_S_DCLA_SLK_v2,
     ResUNetBaseline_S_MSF_v2,
     ResUNetBaseline_S_DCLA_MSF_v2,
-    ResUNetBaseline_S_SLK_MSF_v2
+    ResUNetBaseline_S_SLK_MSF_v2,
+    
+    DCLA_UNet_v3,
+    ResUNetBaseline_S_DCLA_v3,
+    ResUNetBaseline_S_SLK_v3,
+    ResUNetBaseline_S_DCLA_SLK_v3,
+    ResUNetBaseline_S_MSF_v3,
+    ResUNetBaseline_S_DCLA_MSF_v3,
+    ResUNetBaseline_S_SLK_MSF_v3
 )
 
 

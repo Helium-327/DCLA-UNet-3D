@@ -352,7 +352,7 @@ if __name__ == '__main__':
     
     csv_file = '/root/workspace/BraTS_Solution/data/test.csv'
     
-    out_dir = '/mnt/d/results/1_对比网络结果/output'
+    out_dir = '/mnt/d/results/2_消融实验结果/output'
     os.makedirs(out_dir, exist_ok=True)
         
     model_names = ['UNet3D', 'AttentionUNet3D']
@@ -452,39 +452,63 @@ if __name__ == '__main__':
     # )
     # inference(**unet_common_config, stride_ratio=0) 
     
-    # ##! DCLA_UNet_v2
-    model = load_model('DCLA_UNet_v2')
+    # # ##! DCLA_UNet_v2
+    # model = load_model('DCLA_UNet_v2')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】DCLA_UNet_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! ResUNetBaseline_S_SLK_LiteMSF_v2
+    # model = load_model('ResUNetBaseline_S_SLK_LiteMSF_v2')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_LiteMSF_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_LiteMSF_v2_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    
+    # # ##! ResUNetBaseline_S_SLK_v2
+    # model = load_model('ResUNetBaseline_S_SLK_v2')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_v2_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! ResUNetBaseline_S_DCLA_SLK_v2
+    # model = load_model('ResUNetBaseline_S_DCLA_SLK_v2')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_DCLA_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLA_SLK_v2_final_model.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # ##! ResUNetBaseline_S_MSF_v2
+    model = load_model('ResUNetBaseline_S_MSF_v2')
     unet_common_config.update(
         {
             'model':        model,
             'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】DCLA_UNet_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_final_model.pth")
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_MSF_v2_2025-05-15_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_MSF_v2_final_model.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
-    
-    # ##! ResUNetBaseline_S_SLK_v2
-    model = load_model('ResUNetBaseline_S_SLK_v2')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_v2_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0) 
-    
-    # ##! ResUNetBaseline_S_DCLA_SLK_v2
-    model = load_model('ResUNetBaseline_S_DCLA_SLK_v2')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_DCLA_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLA_SLK_v2_final_model.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0) 
-    
+
+
     
     
     

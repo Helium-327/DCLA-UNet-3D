@@ -54,8 +54,8 @@ def load_model(model_name):
                                         do_ds=False,
                                     ),
         'SegFormer3D':              SegFormer3D(in_channels=4, out_channels=4),
-        # 'Mamba3d':                  Mamba3d(in_channels=4, out_channels=4),
-        # 'MogaNet':                  MogaNet(in_channels=4, out_channels=4),
+        'Mamba3d':                  Mamba3d(in_channels=4, out_channels=4),
+        'MogaNet':                  MogaNet(in_channels=4, out_channels=4),
         
         #! 基线网络
         'DWResUNet':                            DWResUNet(in_channels=4, out_channels=4),
@@ -79,6 +79,15 @@ def load_model(model_name):
         'ResUNetBaseline_S_MSF_v2':             ResUNetBaseline_S_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_MSF_v2':        ResUNetBaseline_S_DCLA_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_SLK_MSF_v2':         ResUNetBaseline_S_SLK_MSF_v2(in_channels=4, out_channels=4),
+        
+        #! DCLA_UNet v3
+        'DCLA_UNet_v3':                         DCLA_UNet_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_v3':            ResUNetBaseline_S_DCLA_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_v3':             ResUNetBaseline_S_SLK_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_SLK_v3':        ResUNetBaseline_S_DCLA_SLK_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_MSF_v3':             ResUNetBaseline_S_MSF_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_DCLA_MSF_v3':        ResUNetBaseline_S_DCLA_MSF_v3(in_channels=4, out_channels=4),
+        'ResUNetBaseline_S_SLK_MSF_v3':         ResUNetBaseline_S_SLK_MSF_v3(in_channels=4, out_channels=4),
     }
     # 加载模型
     

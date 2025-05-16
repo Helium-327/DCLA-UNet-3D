@@ -5,10 +5,11 @@ Training_Models=(
                 # "MogaNet" \
                 # "UNETR" \
                 # "UNETR_PP" \
-                "DCLA_UNet_v2"\
-                "ResUNetBaseline_S_SLK_MSF_v2"\
-                "ResUNetBaseline_S_SLK_DCLCA_MSF_v2"\
-                "ResUNetBaseline_S_SLK_DCLSA_MSF_v2"
+                "Mamba3d"\
+                "DCLA_UNet_v3"
+                # "ResUNetBaseline_S_SLK_MSF_v2"\
+                # "ResUNetBaseline_S_SLK_DCLCA_MSF_v2"\
+                # "ResUNetBaseline_S_SLK_DCLSA_MSF_v2"
                 # "ResUNetBaseline_S_SLK_LiteMSF"
                 # 'ResUNetBaseline_S_DCLA'\
                 # "ResUNetBaseline_S_SLK"                
@@ -25,7 +26,7 @@ Training_Models=(
                 )
 
 
-slb_project="0509_DCLA_UNet_v4"  #TODO: 填写训练的项目名称 (必填)
+slb_project="0515_DCLA_UNet_v2"  #TODO: 填写训练的项目名称 (必填)
 # 优先级判断
 if [ -z "$slb_project" ]; then  # 脚本变量未设置
     if [ $# -ge 1 ]; then       # 检查命令行参数
@@ -45,7 +46,7 @@ shopt -s nullglob
 for model_name in "${Training_Models[@]}"; do
     echo "🔍 正在加载并训练: $model_name 模型................................."  
     # 执行命令
-    python main.py --model_name "$model_name" \
+    python src/main.py --model_name "$model_name" \
                    --slb \
                    --lr 1e-4 \
                    --wd 1e-5 \
@@ -53,7 +54,7 @@ for model_name in "${Training_Models[@]}"; do
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project "$slb_project"                    

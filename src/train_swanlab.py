@@ -59,26 +59,6 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 torch.manual_seed(RANDOM_SEED)
 torch.cuda.manual_seed(RANDOM_SEED)                 #让显卡产生的随机数一致
 
-# logging.basicConfig(level=logging.INFO, format=' %(levelname)s - %(message)s- %(asctime)s - %(name)s')
-# logging.getLogger().setLevel(logging.INFO)
-
-# 定义日志格式
-# def setup_logging(log_file=None):
-#     logging.basicConfig(
-#         level=logging.INFO,
-#         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#         datefmt='%Y-%m-%d %H:%M:%S',
-#         filename=log_file,
-#         filemode='a'
-#     )
-
-#     # 如果没有指定日志文件，也输出到控制台
-#     if not log_file:
-#         console = logging.StreamHandler()
-#         console.setLevel(logging.INFO)
-#         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#         console.setFormatter(formatter)
-#         logging.getLogger('').addHandler(console)
 
 def get_current_time():
     return datetime.now().strftime("%Y%m%d-%H%M%S")
