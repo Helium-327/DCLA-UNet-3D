@@ -21,10 +21,17 @@ from .dcla_unet_v2 import (
 
 from .dcla_unet_v3 import (
     DCLA_UNet_v3,
-    ResUNetBaseline_S_DCLA_v3,
     ResUNetBaseline_S_SLK_v3,
     ResUNetBaseline_S_DCLA_SLK_v3,
-    ResUNetBaseline_S_MSF_v3,
-    ResUNetBaseline_S_DCLA_MSF_v3,
     ResUNetBaseline_S_SLK_MSF_v3
+)
+
+from .dcla_unet_v4 import (
+    DCLA_UNet_v4,
+    ResUNetBaseline_S_DCLA_v4,
+    ResUNetBaseline_S_SLK_v4,
+    ResUNetBaseline_S_DCLA_SLK_v4,
+    ResUNetBaseline_S_MSF_v4,
+    ResUNetBaseline_S_DCLA_MSF_v4,
+    ResUNetBaseline_S_SLK_MSF_v4
 )

@@ -138,7 +138,7 @@ class DCLA_UNet_v3(nn.Module):
         self.Conv3 = SLK(f_list[1], f_list[2], kernel_size=kernel_size)
         self.Conv4 = SLK(f_list[2], f_list[3], kernel_size=kernel_size)
         
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
@@ -188,7 +188,7 @@ class DCLA_UNet_v3(nn.Module):
     
 class ResUNetBaseline_S_SLK_v3(ResUNetBaseline_S):
     __remark__ = """
-    [Version]: V2
+    [Version]: V3
     [Author]: Junyin Xiong
     [basline]: ResUNetBaseline_S
     [Features]
@@ -275,97 +275,6 @@ class ResUNetBaseline_S_DCLA_SLK_v3(ResUNetBaseline_S_SLK_v3):
         
         out = self.outc(d2)  # [B, out_channels, D, H, W]
         return out
-
-class ResUNetBaseline_S_MSF_v3(ResUNetBaseline_S):
-    __remark__ = """
-    [Version]: V2
-    [Author]: Junyin Xiong
-    [basline]: ResUNetBaseline_S
-    [Features]
-    • 总参数量: 
-    • FLOPs: 
-    """
-    def __init__(self,
-                 in_channels=4, 
-                 out_channels=4,
-                 f_list=[32, 64, 128, 256], 
-                 trilinear=True, 
-                 dropout_rate=0
-                 ):
-        super(ResUNetBaseline_S_MSF_v3, self).__init__(
-                in_channels=in_channels, 
-                out_channels=out_channels,
-                f_list=f_list, 
-                trilinear=trilinear, 
-                dropout_rate=dropout_rate
-        )
-        
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0])
-        
-    def forward(self, x):
-        return super().forward(x)
-
-    
-class ResUNetBaseline_S_DCLA_MSF_v3(ResUNetBaseline_S_MSF_v3):
-    __remark__ = """
-    [Version]: V2
-    [Author]: Junyin Xiong
-    [basline]: ResUNetBaseline_S
-    [Features]
-    • 总参数量: 
-    • FLOPs: 
-    """
-    def __init__(self,
-                 in_channels=4, 
-                 out_channels=4,
-                 f_list=[32, 64, 128, 256], 
-                 trilinear=True, 
-                 dropout_rate=0
-                 ):
-        super(ResUNetBaseline_S_DCLA_MSF_v3, self).__init__(
-                in_channels=in_channels, 
-                out_channels=out_channels,
-                f_list=f_list, 
-                trilinear=trilinear, 
-                dropout_rate=dropout_rate
-        )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
-        
-    def forward(self, x):
-        # Encoder
-        x1 = self.Conv1(x)                # [B, 32, D, H, W]
-        x2 = self.MaxPool(x1)
-        x2 = self.Conv2(x2)      # [B, 64, D/2, H/2, W/2]
-        x3 = self.MaxPool(x2)
-        x3 = self.Conv3(x3)      # [B, 128, D/4, H/4, W/4]
-        x4 = self.MaxPool(x3)
-        x4 = self.Conv4(x4)      # [B, 256, D/8, H/8, W/8]
-        x5 = self.MaxPool(x4)
-    
-        x5 = self.dcla([x1, x2, x3, x4], x5)  # [B, 256, D/8, H/8, W/8]
-        
-        # Decoder with Attention
-        d5 = self.Up4(x5)               # [B, 256, D/8, H/8, W/8]
-        d5 = torch.cat((x4, d5), dim=1)
-        d5 = self.UpConv4(d5)    # [B, 128, D/8, H/8, W/8]
-        
-        d4 = self.Up3(d5)        # [B, 128, D/4, H/4, W/4]
-        d4 = torch.cat((x3, d4), dim=1)
-        d4 = self.UpConv3(d4)    # [B, 64, D/4, H/4, W/4]
-        
-        d3 = self.Up2(d4)        # [B, 64, D/2, H/2, W/2]
-        d3 = torch.cat((x2, d3), dim=1)
-        d3 = self.UpConv2(d3)    # [B, 32, D/2, H/2, W/2]
-        
-        d2 = self.Up1(d3)        # [B, 32, D, H, W]
-        d2 = torch.cat((x1, d2), dim=1)
-        d2 = self.UpConv1(d2)    # [B, 32, D, H, W]
-        
-        out = self.outc(d2)  # [B, out_channels, D, H, W]
-        return out
     
 class ResUNetBaseline_S_SLK_MSF_v3(ResUNetBaseline_S):
     __remark__ = """
@@ -401,152 +310,6 @@ class ResUNetBaseline_S_SLK_MSF_v3(ResUNetBaseline_S):
         
     def forward(self, x):
         return super().forward(x)
-
-
-class ResUNetBaseline_S_DCLA_v3(ResUNetBaseline_S):
-    __remark__ = """
-    [Version]: V2
-    [Author]: Junyin Xiong
-    [basline]: ResUNetBaseline_S
-    [Features]
-    • 总参数量: 
-    • FLOPs: 
-    """
-    def __init__(self,
-                    in_channels=4,
-                    out_channels=4,
-                    f_list=[32, 64, 128, 256],
-                    trilinear=True,
-                    dropout_rate=0
-                    ):
-        super(ResUNetBaseline_S_DCLA_v3, self).__init__(
-                in_channels=in_channels,
-                out_channels=out_channels,
-                f_list=f_list,
-                trilinear=trilinear,
-                dropout_rate=dropout_rate
-        )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
-        
-    def forward(self, x):
-        # Encoder
-        x1 = self.Conv1(x)                # [B, 32, D, H, W]
-        x2 = self.MaxPool(x1)
-        x2 = self.Conv2(x2)      # [B, 64, D/2, H/2, W/2]
-        x3 = self.MaxPool(x2)
-        x3 = self.Conv3(x3)      # [B, 128, D/4, H/4, W/4]
-        x4 = self.MaxPool(x3)
-        x4 = self.Conv4(x4)      # [B, 256, D/8, H/8, W/8]
-        x5 = self.MaxPool(x4)
-    
-        x5 = self.dcla([x1, x2, x3, x4], x5)  # [B, 256, D/8, H/8, W/8]
-        
-        # Decoder with Attention
-        d5 = self.Up4(x5)               # [B, 256, D/8, H/8, W/8]
-        d5 = torch.cat((x4, d5), dim=1)
-        d5 = self.UpConv4(d5)    # [B, 128, D/8, H/8, W/8]
-        
-        d4 = self.Up3(d5)        # [B, 128, D/4, H/4, W/4]
-        d4 = torch.cat((x3, d4), dim=1)
-        d4 = self.UpConv3(d4)    # [B, 64, D/4, H/4, W/4]
-        
-        d3 = self.Up2(d4)        # [B, 64, D/2, H/2, W/2]
-        d3 = torch.cat((x2, d3), dim=1)
-        d3 = self.UpConv2(d3)    # [B, 32, D/2, H/2, W/2]
-        
-        d2 = self.Up1(d3)        # [B, 32, D, H, W]
-        d2 = torch.cat((x1, d2), dim=1)
-        d2 = self.UpConv1(d2)    # [B, 32, D, H, W]
-        
-        out = self.outc(d2)  # [B, out_channels, D, H, W]
-        return out
-    
-class ResUNetBaseline_S_DCLA_SLK_v3(ResUNetBaseline_S_DCLA_v3):
-    __remark__ = """
-    [Version]: V2
-    [Author]: Junyin Xiong
-    [basline]: ResUNetBaseline_S
-    [Features]
-    • 总参数量: 
-    • FLOPs: 
-    """
-    # 0.86 M
-    def __init__(self,
-                 in_channels=4, 
-                 out_channels=4,
-                 f_list=[32, 64, 128, 256], 
-                 trilinear=True
-                 ):
-        super(ResUNetBaseline_S_DCLA_SLK_v3, self).__init__(
-                in_channels=in_channels, 
-                out_channels=out_channels,
-                f_list=f_list, 
-                trilinear=trilinear
-        )
-        self.kernel_size = 7
-        self.Conv1 = SLK(in_channels, f_list[0], kernel_size=self.kernel_size)
-        self.Conv2 = SLK(f_list[0], f_list[1], kernel_size=self.kernel_size)
-        self.Conv3 = SLK(f_list[1], f_list[2], kernel_size=self.kernel_size)
-        self.Conv4 = SLK(f_list[2], f_list[3], kernel_size=self.kernel_size)
-          
-    def forward(self, x):
-        return super().forward(x)
-    
-class ResUNetBaseline_S_DCLA_MSF_v3(DCLA_UNet_v3):
-    __remark__ = """
-    [Version]: V2
-    [Author]: Junyin Xiong
-    [basline]: ResUNetBaseline_S
-    [Features]
-    • 总参数量: 
-    • FLOPs: 
-    """
-    def __init__(self,
-                 in_channels=4, 
-                 out_channels=4,
-                 f_list=[32, 64, 128, 256], 
-                 trilinear=True
-                 ):
-        super(ResUNetBaseline_S_DCLA_MSF_v3, self).__init__(
-                in_channels=in_channels, 
-                out_channels=out_channels,
-                f_list=f_list, 
-                trilinear=trilinear
-        )
-        if hasattr(self, 'dcla'):
-            delattr(self, 'dcla')
-         
-    def forward(self, x):
-        # Encoder
-        x1 = self.Conv1(x)                # [B, 32, D, H, W]
-        x2 = self.MaxPool(x1)
-        x2 = self.Conv2(x2)      # [B, 64, D/2, H/2, W/2]
-        x3 = self.MaxPool(x2)
-        x3 = self.Conv3(x3)      # [B, 128, D/4, H/4, W/4]
-        x4 = self.MaxPool(x3)
-        x4 = self.Conv4(x4)      # [B, 256, D/8, H/8, W/8]
-        x5 = self.MaxPool(x4)
-        
-        # Decoder with Attention
-        d5 = self.Up4(x5)               # [B, 256, D/8, H/8, W/8]
-        d5 = torch.cat((x4, d5), dim=1)
-        d5 = self.UpConv4(d5)    # [B, 128, D/8, H/8, W/8]
-        
-        d4 = self.Up3(d5)        # [B, 128, D/4, H/4, W/4]
-        d4 = torch.cat((x3, d4), dim=1)
-        d4 = self.UpConv3(d4)    # [B, 64, D/4, H/4, W/4]
-        
-        d3 = self.Up2(d4)        # [B, 64, D/2, H/2, W/2]
-        d3 = torch.cat((x2, d3), dim=1)
-        d3 = self.UpConv2(d3)    # [B, 32, D/2, H/2, W/2]
-        
-        d2 = self.Up1(d3)        # [B, 32, D, H, W]
-        d2 = torch.cat((x1, d2), dim=1)
-        d2 = self.UpConv1(d2)    # [B, 32, D, H, W]
-        
-        out = self.outc(d2)  # [B, out_channels, D, H, W]
-        return out
-
 
 if __name__ == "__main__":
     test_unet(model_class=DCLA_UNet_v3, batch_size=1)   

@@ -89,6 +89,64 @@ class ResBlockOfDepthwiseAxialConv3D(nn.Module):
         out += self.residual(x)
         return self.act(out)
 
+# class SlimLargeKernelBlock(nn.Module): 
+#     def __init__(self, 
+#                  in_channels, 
+#                  out_channels, 
+#                  kernel_size=3,
+#                 ):
+#         super().__init__()
+        
+#         self.depthwise = nn.Sequential(
+#             nn.Conv3d(in_channels,out_channels,kernel_size=1),
+#             DepthwiseAxialConv3d(
+#                     out_channels,
+#                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+#                     kernel_size=kernel_size
+#                 ),
+#             nn.BatchNorm3d(out_channels),
+#             nn.GELU(),
+#             SwishECA(out_channels),
+#             DepthwiseAxialConv3d(
+#                     out_channels,
+#                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+#                     kernel_size=kernel_size
+#                 ),
+#             nn.BatchNorm3d(out_channels),
+#         )
+        
+#         self.act = nn.GELU() 
+#         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+#     def forward(self, x):
+#         out = self.depthwise(x) + self.residual(x)
+#         return self.act(out)
+#! 改进点1 更换编码器
+
+class ResBlockOfDepthwiseAxialConv3D(nn.Module):
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                 use_act = True,
+                 act_op = 'gelu',
+                ):
+        super().__init__()
+        self.use_act = use_act
+        self.conv = nn.Sequential(
+                DepthwiseAxialConv3d(
+                    in_channels,
+                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+                    kernel_size=kernel_size
+                ),
+                nn.BatchNorm3d(out_channels),
+        )
+        self.act = nn.GELU() if act_op == 'gelu' else nn.LeakyReLU()
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+    def forward(self, x):
+        out = self.conv(x)
+        out += self.residual(x)
+        return self.act(out)
+    
 class SlimLargeKernelBlock(nn.Module): 
     def __init__(self, 
                  in_channels, 
@@ -98,29 +156,15 @@ class SlimLargeKernelBlock(nn.Module):
         super().__init__()
         
         self.depthwise = nn.Sequential(
-            nn.Conv3d(in_channels,out_channels,kernel_size=1),
-            DepthwiseAxialConv3d(
-                    out_channels,
-                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
-                    kernel_size=kernel_size
-                ),
-            nn.BatchNorm3d(out_channels),
-            nn.GELU(),
-            SwishECA(out_channels),
-            DepthwiseAxialConv3d(
-                    out_channels,
-                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
-                    kernel_size=kernel_size
-                ),
-            nn.BatchNorm3d(out_channels),
+            ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size),
+            # SwishECA(out_channels),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size),
         )
         
-        self.act = nn.GELU() 
-        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        # self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
     def forward(self, x):
-        out = self.depthwise(x) + self.residual(x)
-        return self.act(out)
-    
+        out = self.depthwise(x)
+        return out  
     
 class MutilScaleFusionBlock(nn.Module): #(MLP)
     def __init__(self, 
@@ -279,12 +323,12 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         # if isinstance(self.kernel_size, int):
         for ch in self.ch_list:
             self.squeeze_layers.append(
-                #! 改进点：添加分组注意力
+                #! 改进点2：添加分组注意力
                 nn.Sequential(
                     nn.Conv3d(ch, ch//groups, kernel_size=squeeze_kernel, padding=squeeze_kernel//2, groups=groups),
-                    nn.GroupNorm(ch//groups, ch//groups),
+                    nn.GroupNorm(groups, ch//groups),
                     nn.GELU(),
-                    nn.Conv3d(ch, 1, kernel_size=1),
+                    nn.Conv3d(ch//groups, 1, kernel_size=1),
                     nn.GELU()
                     ))
         for feat_size in feats_size:

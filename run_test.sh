@@ -1,44 +1,19 @@
 #!/bin/bash
 
 Training_Models=(
-                # "Mamba3d" \
-                # "MogaNet" \
-                # "UNETR" \
-                # "UNETR_PP" \
-                # "SlimSepUNetv2_LKDCLAv3_Attn" \
-                
-                # "SlimSepUNetv2_LKDCLAv3" \
-                # 'DWResUNetBaseline'\
-                # 'DWResUNetBaseline_SLK'\
-                # 'DWResUNetBaseline_LiteMSF'\
-                # 'DWResUNetBaseline_DCLA'\
-                # "ResUNetBaseline_S_SLK_LiteMSF"\
-
-                # "ResUNetBaseline_S_DCLA"\
-                # 'ResUNetBaseline_S'\
-                # "ResUNetBaseline_S_LiteMSF"\
-                # "DCLA_UNet_v1"\
-                # "ResUNetBaseline_S_SLK_MSF_v1"
-                # "ResUNetBaseline_S_SLK_DCLCA_MSF_v1"
-                # "ResUNetBaseline_S_SLK_DCLSA_MSF_v1"
+                # SLKv2
                 "DCLA_UNet_v3"\
-                "ResUNetBaseline_S_SLK_MSF_v3"
-                "ResUNetBaseline_S_SLK_DCLCA_MSF_v3"
-                "ResUNetBaseline_S_SLK_DCLSA_MSF_v3"
-                # "ResUNetBaseline_S_SLK"                
-                # 'ResUNetBaseline_S_DCLA_SLK'\
-                # 'ResUNetBaseline_S_DCLA_LiteMSF'\
-                # "ResUNetBaseline_S_SLK_LiteMSF"\
-                # "ResUNetBaseline_S_DCLA"\
-                # 'ResUNetBaseline_S'\
-                # 'ResUNetBaseline_S_SLK'\
-                # 'ResUNetBaseline_S_DCLA'\
-                # 'ResUNetBaseline_M'\
-                # 'ResUNetBaseline_M_SLK'\
-                # 'ResUNetBaseline_M_LiteMSF'\
-                # 'ResUNetBaseline_M_DCLA'\
+                "ResUNetBaseline_S_SLK_v3"\
+                "ResUNetBaseline_S_DCLA_SLK_v3"\
+                "ResUNetBaseline_S_SLK_MSF_v3"\
+
+                # DCLAv2
+                "DCLA_UNet_v4"\
+                "ResUNetBaseline_S_DCLA_v4"\
+                "ResUNetBaseline_S_DCLA_SLK_v4"\
+                "ResUNetBaseline_S_DCLA_MSF_v4"\
                 )
- 
+
 
 slb_project="lr2e-4_wd1e-5_mlr1e-5_epochs200_T_max100"  #TODO: 填写训练的项目名称 (必填)
 # 优先级判断
@@ -65,13 +40,13 @@ for model_name in "${Training_Models[@]}"; do
                    --val_length 60 \
                    --test_length 30 \
                    --epochs 10 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --lr 1e-4 \
                    --wd 1e-5 \
                    --cosine_eta_min 1e-5 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
-                   --num_workers 4 \
+                   --num_workers 8 \
                    --interval 1 \
                    --slb_project $slb_project
 done

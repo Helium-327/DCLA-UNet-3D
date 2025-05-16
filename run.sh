@@ -1,28 +1,17 @@
 #!/bin/bash
 
 Training_Models=(
-                # "Mamba3d" \
-                # "MogaNet" \
-                # "UNETR" \
-                # "UNETR_PP" \
-                "Mamba3d"\
-                "DCLA_UNet_v3"
-                # "ResUNetBaseline_S_SLK_MSF_v2"\
-                # "ResUNetBaseline_S_SLK_DCLCA_MSF_v2"\
-                # "ResUNetBaseline_S_SLK_DCLSA_MSF_v2"
-                # "ResUNetBaseline_S_SLK_LiteMSF"
-                # 'ResUNetBaseline_S_DCLA'\
-                # "ResUNetBaseline_S_SLK"                
-                # 'ResUNetBaseline_S_LiteMSF'\
-                # "ResUNetBaseline_S_DCLA"\
-                # "ResUNetBaseline_S_SLK_LiteMSF"\
-                # 'ResUNetBaseline_S_DCLA_LiteMSF'\
-                # 'ResUNetBaseline_S_DCLA_SLK'\
-                # 'ResUNetBaseline_S_SLK'\
-                # 'ResUNetBaseline_M'\
-                # 'ResUNetBaseline_M_SLK'\
-                # 'ResUNetBaseline_M_LiteMSF'\
-                # 'ResUNetBaseline_M_DCLA'\
+                # SLKv2
+                "DCLA_UNet_v3"\
+                "ResUNetBaseline_S_SLK_v3"\
+                "ResUNetBaseline_S_DCLA_SLK_v3"\
+                "ResUNetBaseline_S_SLK_MSF_v3"\
+
+                # DCLAv2
+                "DCLA_UNet_v4"\
+                "ResUNetBaseline_S_DCLA_v4"\
+                "ResUNetBaseline_S_DCLA_SLK_v4"\
+                "ResUNetBaseline_S_DCLA_MSF_v4"\
                 )
 
 

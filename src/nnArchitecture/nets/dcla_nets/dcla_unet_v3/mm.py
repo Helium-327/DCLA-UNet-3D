@@ -76,19 +76,51 @@ class ResBlockOfDepthwiseAxialConv3D(nn.Module):
         self.use_act = use_act
         self.conv = nn.Sequential(
                 DepthwiseAxialConv3d(
-                    out_channels,
+                    in_channels,
                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
                     kernel_size=kernel_size
                 ),
                 nn.BatchNorm3d(out_channels),
         )
-        self.act = nn.SiLU() if act_op == 'gelu' else nn.LeakyReLU()
+        self.act = nn.GELU() if act_op == 'gelu' else nn.LeakyReLU()
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
     def forward(self, x):
         out = self.conv(x)
         out += self.residual(x)
         return self.act(out)
 
+# class SlimLargeKernelBlock(nn.Module): 
+#     def __init__(self, 
+#                  in_channels, 
+#                  out_channels, 
+#                  kernel_size=3,
+#                 ):
+#         super().__init__()
+        
+#         self.depthwise = nn.Sequential(
+#             nn.Conv3d(in_channels,out_channels,kernel_size=1),
+#             DepthwiseAxialConv3d(
+#                     out_channels,
+#                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+#                     kernel_size=kernel_size
+#                 ),
+#             nn.BatchNorm3d(out_channels),
+#             nn.GELU(),
+#             SwishECA(out_channels),
+#             DepthwiseAxialConv3d(
+#                     out_channels,
+#                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+#                     kernel_size=kernel_size
+#                 ),
+#             nn.BatchNorm3d(out_channels),
+#         )
+        
+#         self.act = nn.GELU() 
+#         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+#     def forward(self, x):
+#         out = self.depthwise(x) + self.residual(x)
+#         return self.act(out)
+#! 改进点1 更换编码器
 class SlimLargeKernelBlock(nn.Module): 
     def __init__(self, 
                  in_channels, 
@@ -98,29 +130,15 @@ class SlimLargeKernelBlock(nn.Module):
         super().__init__()
         
         self.depthwise = nn.Sequential(
-            nn.Conv3d(in_channels,out_channels,kernel_size=1),
-            DepthwiseAxialConv3d(
-                    out_channels,
-                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
-                    kernel_size=kernel_size
-                ),
-            nn.BatchNorm3d(out_channels),
-            nn.GELU(),
-            SwishECA(out_channels),
-            DepthwiseAxialConv3d(
-                    out_channels,
-                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
-                    kernel_size=kernel_size
-                ),
-            nn.BatchNorm3d(out_channels),
+            ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size),
+            # SwishECA(out_channels),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size),
         )
         
-        self.act = nn.GELU() 
-        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        # self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
     def forward(self, x):
-        out = self.depthwise(x) + self.residual(x)
-        return self.act(out)
-    
+        out = self.depthwise(x)
+        return out
     
 class MutilScaleFusionBlock(nn.Module): #(MLP)
     def __init__(self, 

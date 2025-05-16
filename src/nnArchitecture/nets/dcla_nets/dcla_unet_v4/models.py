@@ -35,7 +35,7 @@ from nnArchitecture.nets.dcla_nets.dcla_unet_v4.mm import (
     MutilScaleFusionBlock as MSF,
     DynamicCrossLevelAttention as DCLA
 )
-    
+
 from utils.test_unet import test_unet
 
 class ResUNetBaseline_S(nn.Module):
@@ -138,7 +138,7 @@ class DCLA_UNet_v4(nn.Module):
         self.Conv3 = SLK(f_list[1], f_list[2], kernel_size=kernel_size)
         self.Conv4 = SLK(f_list[2], f_list[3], kernel_size=kernel_size)
         
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
@@ -241,7 +241,7 @@ class ResUNetBaseline_S_DCLA_SLK_v4(ResUNetBaseline_S_SLK_v4):
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate
         )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         
     def forward(self, x):
         # Encoder
@@ -332,7 +332,7 @@ class ResUNetBaseline_S_DCLA_MSF_v4(ResUNetBaseline_S_MSF_v4):
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate
         )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         
     def forward(self, x):
         # Encoder
@@ -426,7 +426,7 @@ class ResUNetBaseline_S_DCLA_v4(ResUNetBaseline_S):
                 trilinear=trilinear,
                 dropout_rate=dropout_rate
         )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[3, 5, 7], fusion_kernel=1)
         
     def forward(self, x):
         # Encoder
@@ -549,6 +549,6 @@ class ResUNetBaseline_S_DCLA_MSF_v4(DCLA_UNet_v4):
 
 
 if __name__ == "__main__":
-    test_unet(model_class=ResUNetBaseline_S, batch_size=1)   
-    model = ResUNetBaseline_S(in_channels=4, out_channels=4)
+    test_unet(model_class=DCLA_UNet_v4, batch_size=1)   
+    model = DCLA_UNet_v4(in_channels=4, out_channels=4)
     print(model.__remark__)
