@@ -84,6 +84,7 @@ def load_model(model_name):
         'ResUNetBaseline_S_DCLA_SLK_v2':        ResUNetBaseline_S_DCLA_SLK_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_SLKv1_v2':      ResUNetBaseline_S_DCLA_SLKv1_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_SLKv2_v2':      ResUNetBaseline_S_DCLA_SLKv2_v2(in_channels=4, out_channels=4),
+        "ResUNetBaseline_S_DCLAv1_SLKv2_v2":    ResUNetBaseline_S_DCLAv1_SLKv2_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_MSF_v2':             ResUNetBaseline_S_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLA_MSF_v2':        ResUNetBaseline_S_DCLA_MSF_v2(in_channels=4, out_channels=4),
         'ResUNetBaseline_S_DCLAv1_MSF_v2':      ResUNetBaseline_S_DCLAv1_MSF_v2(in_channels=4, out_channels=4),

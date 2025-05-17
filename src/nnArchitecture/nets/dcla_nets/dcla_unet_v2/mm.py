@@ -292,7 +292,7 @@ class AdaptiveSpatialCondenser(nn.Module):
                     stride=2, 
                     padding=kernel_size//2
                     ),
-                nn.BatchNorm3d(self.out_channels),
+                nn.InstanceNorm3d(self.out_channels, affine=True),
                 nn.GELU()
             ))
             current_size = current_size // 2
@@ -339,7 +339,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
             self.squeeze_layers.append(
                 nn.Sequential(
                     nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
-                    nn.BatchNorm3d(1),
+                    nn.InstanceNorm3d(1, affine=True),
                     nn.GELU()
                     ))
         for feat_size in feats_size:
@@ -359,7 +359,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                       kernel_size=1, 
                       padding=0
                       ),
-            nn.BatchNorm3d(1),
+            nn.InstanceNorm3d(1, affine=True),
             nn.GELU(),
             nn.Conv3d(1, 1, kernel_size=1, padding=0)
         )
@@ -432,6 +432,7 @@ class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
                     nn.GroupNorm(groups, ch//groups),
                     nn.GELU(),
                     nn.Conv3d(ch//groups, 1, kernel_size=1),
+                    nn.InstanceNorm3d(1, affine=True),
                     nn.GELU()
                     ))
         for feat_size in feats_size:
@@ -451,7 +452,7 @@ class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
                       kernel_size=1, 
                       padding=0
                       ),
-            nn.BatchNorm3d(1),
+            nn.InstanceNorm3d(1, affine=True),
             nn.GELU(),
             nn.Conv3d(1, 1, kernel_size=1, padding=0)
         )

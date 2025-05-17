@@ -1,19 +1,24 @@
 #!/bin/bash
 
 Training_Models=(
-                # SLKv2
-                # "DCLA_UNet_v2_2"\
+                # 先确定SLK
+                "ResUNetBaseline_S_SLKv1_v2"\
                 # "ResUNetBaseline_S_SLKv2_v2"\
-                # "ResUNetBaseline_S_DCLA_SLKv2_v2"\
-                "ResUNetBaseline_S_SLKv2_MSF_v2"\
 
-                # DCLAv2
-                "DCLA_UNet_v2_3"\
-                "ResUNetBaseline_S_DCLAv1_v2"\
-                "ResUNetBaseline_S_DCLAv1_SLKv2_v2"\
-                "ResUNetBaseline_S_DCLAv1_MSF_v4"\
+                # 再确定DCLA /3, 5, 7
+                "ResUNetBaseline_S_DCLA_SLKv2_v2"\
+                
+                # 最终
+                # "DCLA_UNet_v2_1"\
+                # "DCLA_UNet_v2_2"\
+                # "DCLA_UNet_v2_3"\
+
+                # "ResUNetBaseline_S_DCLAv1_SLKv2_v2"\
+                # "ResUNetBaseline_S_SLKv1_MSF_v2"\
+
+
+
                 )
-
 
 slb_project="lr2e-4_wd1e-5_mlr1e-5_epochs200_T_max100"  #TODO: 填写训练的项目名称 (必填)
 # 优先级判断
@@ -40,13 +45,13 @@ for model_name in "${Training_Models[@]}"; do
                    --val_length 60 \
                    --test_length 30 \
                    --epochs 10 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --lr 1e-4 \
                    --wd 1e-5 \
                    --cosine_eta_min 1e-5 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
-                   --num_workers 4 \
+                   --num_workers 8 \
                    --interval 1 \
                    --slb_project $slb_project
 done

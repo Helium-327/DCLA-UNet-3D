@@ -1,17 +1,24 @@
 #!/bin/bash
 
 Training_Models=(
-                # SLKv2
-                "DCLA_UNet_v3"\
-                "ResUNetBaseline_S_SLK_v3"\
-                "ResUNetBaseline_S_DCLA_SLK_v3"\
-                "ResUNetBaseline_S_SLK_MSF_v3"\
+                # 先确定SLK
+                # "ResUNetBaseline_S_SLKv1_v2"\
+                # "ResUNetBaseline_S_SLKv2_v2"\
 
-                # DCLAv2
-                "DCLA_UNet_v4"\
-                "ResUNetBaseline_S_DCLA_v4"\
-                "ResUNetBaseline_S_DCLA_SLK_v4"\
-                "ResUNetBaseline_S_DCLA_MSF_v4"\
+                # # 再确定DCLA /3, 5, 7
+                # "ResUNetBaseline_S_DCLA_SLKv1_v2"\
+                # "ResUNetBaseline_S_DCLA_SLKv2_v2"\
+                # "ResUNetBaseline_S_DCLAv1_SLKv2_v2"
+                
+                # 最终
+                # "DCLA_UNet_v2_1"\
+                "DCLA_UNet_v2_3"\
+                "DCLA_UNet_v2_2"\
+
+                # "ResUNetBaseline_S_SLKv1_MSF_v2"\
+
+
+
                 )
 
 
