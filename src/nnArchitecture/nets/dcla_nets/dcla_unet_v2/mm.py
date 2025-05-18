@@ -171,7 +171,7 @@ class SlimLargeKernelBlockv2(nn.Module):
         self.depthwise = nn.Sequential(
             ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size),
             SwishECA(out_channels),
-            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size=5),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size),
             ResMLP(out_channels, out_channels),
         )
         

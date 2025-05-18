@@ -294,7 +294,7 @@ class DCLA_UNet_v2_2(nn.Module):
         self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size)
         self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)  # 必须[3, 5, 7]
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)  # 必须[3, 5, 7]
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
@@ -370,7 +370,7 @@ class DCLA_UNet_v2_3(nn.Module):
         self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size)
         self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLAv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLAv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
@@ -654,7 +654,7 @@ class ResUNetBaseline_S_DCLA_SLKv2_v2(ResUNetBaseline_S_SLKv2_v2):
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate
         )
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         
     def forward(self, x):
         # Encoder
@@ -705,14 +705,14 @@ class ResUNetBaseline_S_DCLAv1_SLKv2_v2(ResUNetBaseline_S_DCLA_SLKv2_v2):
                  trilinear=True, 
                  dropout_rate=0
                  ):
-        super(ResUNetBaseline_S_DCLA_SLKv2_v2, self).__init__(
+        super(ResUNetBaseline_S_DCLAv1_SLKv2_v2, self).__init__(
                 in_channels=in_channels, 
                 out_channels=out_channels,
                 f_list=f_list, 
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate
         )
-        self.dcla = DCLAv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[3, 5, 7], fusion_kernel=1)
+        self.dcla = DCLAv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         
     def forward(self, x):
         return super().forward(x)
@@ -1150,6 +1150,6 @@ class ResUNetBaseline_S_DCLAv1_v2(ResUNetBaseline_S):
 
 
 if __name__ == "__main__":
-    test_unet(model_class=ResUNetBaseline_S_DCLAv1_SLKv2_v2, batch_size=1)   
-    model = ResUNetBaseline_S_DCLAv1_SLKv2_v2(in_channels=4, out_channels=4)
+    test_unet(model_class=DCLA_UNet_v2_3, batch_size=1)   
+    model = DCLA_UNet_v2_3(in_channels=4, out_channels=4)
     print(model.__remark__)
