@@ -126,14 +126,15 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
         self.sep_branchs = nn.ModuleList([
             
             nn.Sequential(
+                nn.Conv3d(in_channels, out_channels, 1),
+                get_norm(norm_type, out_channels),
+                get_act(act_type),
                 DepthwiseAxialConv3d(
-                    in_channels,
+                    out_channels,
                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
                     kernel_size=kernel_size, 
                     dilation=d
-                ),
-                get_norm(norm_type, out_channels),
-                get_act(act_type)
+                )
             ) for d in dilations
         ])
         
@@ -154,16 +155,18 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
         
         # relu
-        self.act = get_act(act_type) if act_type == 'relu' else nn.GELU()
+        self.norm = get_norm(norm_type, out_channels)
+        self.act = get_act(act_type)
         
     def forward(self, x):
         out = x
         out = torch.sum(torch.stack([sep(out) for sep in self.sep_branchs]), dim=0)  # 使用加法而不是拼接
+        out = self.act(self.norm(out))
         
         if self.use_attn:
             channels_attn = self.ca(out)
             spatial_attn = self.sa(out)
-            out = out * channels_attn +  out * spatial_attn
+            out = out * channels_attn * spatial_attn
             
         if self.use_fusion:
             out = self.fusion(out)
@@ -254,6 +257,8 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         self.fusion_mode = fusion_mode
         self.squeeze_layers = nn.ModuleList()
         self.down_layers = nn.ModuleList()
+        self.norm = get_norm(norm_type, 1)
+        self.act = get_act(act_type)
         
         # if isinstance(self.kernel_size, int):
         for ch in self.ch_list:
@@ -274,18 +279,10 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                     fusion_mode=self.fusion_mode  # 'concat' or 'add'
                 )
             )
-        self.conv = nn.Sequential(
-            nn.Conv3d(len(self.kernel_size),
-                      1, 
-                      kernel_size=1, 
-                      padding=0
-                      ),
-            nn.Conv3d(1, 1, kernel_size=1, padding=0),
-            get_norm(norm_type, 1),
-            get_act(act_type),
-        )
+        self.conv = nn.Conv3d(len(self.kernel_size), 1, kernel_size=1, padding=0)
+        
         self.fusion = nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2)
-
+        self.res_scale = nn.Parameter(torch.ones(1)*0.1, requires_grad=True)
     def forward(self, encoder_feats, x):
         squeezed_feats = []
         
@@ -308,14 +305,14 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                 down_feat = down_feat
             else:
                 raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")
-            
+            down_feat = self.act(self.norm(down_feat))
             downs.append(down_feat.squeeze(1))
         # 特征融合
         fused = self.fusion(torch.stack(downs, dim=1))
         attn = torch.sigmoid(fused)
         
-        out = attn * x + x
-        return out
+        out = attn * x  + x * self.res_scale
+        return out 
     
 class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
     def __init__(self, 
@@ -498,6 +495,8 @@ class ResConv3D_S_BN(nn.Module):
         super().__init__()
         self.double_conv = nn.Sequential(
             nn.Conv3d(in_channels,out_channels,kernel_size=1),
+            get_norm(norm_type, out_channels),
+            get_act(act_type),
             nn.Conv3d(out_channels, 
                       out_channels, 
                       kernel_size=kernel_size, 
@@ -508,7 +507,7 @@ class ResConv3D_S_BN(nn.Module):
         )
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
         self.relu = get_act(act_type)
-        self.drop = nn.Dropout3d(p=dropout_rate)  # 添加 Dropout 层
+        # self.drop = nn.Dropout3d(p=dropout_rate)  # 添加 Dropout 层
     def forward(self, x):
         out = self.double_conv(x) + self.residual(x)
         return self.relu(out)

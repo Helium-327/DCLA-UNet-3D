@@ -220,6 +220,7 @@ class DCLA_UNet_v3(nn.Module):
                  in_channels=4, 
                  out_channels=4,
                  kernel_size=7, 
+                 down_kernels = [7],
                  f_list=[32, 64, 128, 256], 
                  trilinear=True,
                  dropout_rate=0,
@@ -229,13 +230,13 @@ class DCLA_UNet_v3(nn.Module):
         super(DCLA_UNet_v3, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
         self.Conv1 = SLKv2(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla1 = DCLA(ch_list=f_list[:1], feats_size=[128], min_size=64, squeeze_kernel=1, down_kernel=[kernel_size], fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.dcla1 = DCLA(ch_list=f_list[:1], feats_size=[128], min_size=64, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
         self.Conv2 = SLKv2(f_list[0],f_list[1], kernel_size=kernel_size,norm_type=norm_type, act_type=act_type)
-        self.dcla2 = DCLA(ch_list=f_list[:2], feats_size=[128, 64],  min_size=32, squeeze_kernel=1, down_kernel=[kernel_size], fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.dcla2 = DCLA(ch_list=f_list[:2], feats_size=[128, 64],  min_size=32, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
         self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla3 = DCLA(ch_list=f_list[:3], feats_size=[128, 64, 32], min_size=16, squeeze_kernel=1, down_kernel=[kernel_size], fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.dcla3 = DCLA(ch_list=f_list[:3], feats_size=[128, 64, 32], min_size=16, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
         self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla4 = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[kernel_size], fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.dcla4 = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
 
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
@@ -303,13 +304,17 @@ class ResUNetBaseline_S_SLKv2_MSF_v3(DCLA_UNet_v3):
                  in_channels=4, 
                  out_channels=4,
                  f_list=[32, 64, 128, 256], 
-                 trilinear=True
+                 trilinear=True,
+                 norm_type = 'batch',
+                 act_type = 'relu',
                  ):
         super(ResUNetBaseline_S_SLKv2_MSF_v3, self).__init__(
                 in_channels=in_channels, 
                 out_channels=out_channels,
                 f_list=f_list, 
-                trilinear=trilinear
+                trilinear=trilinear,
+                norm_type =norm_type,
+                act_type = act_type
         )
         del_list = ['dcla1', 'dcla2', 'dcla3', 'dcla4']
         for name in del_list:
@@ -332,7 +337,7 @@ class ResUNetBaseline_S_SLKv2_v3(DCLA_UNet_v3):
                  in_channels=4, 
                  out_channels=4,
                  f_list=[32, 64, 128, 256], 
-                 trilinear=True, 
+                 trilinear=True,
                  dropout_rate=0,
                  norm_type = 'batch',
                  act_type = 'relu',
@@ -344,7 +349,7 @@ class ResUNetBaseline_S_SLKv2_v3(DCLA_UNet_v3):
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate,
                 norm_type =norm_type,
-                act_type = act_type,
+                act_type = act_type
         )
         del_list = ['dcla1', 'dcla2', 'dcla3', 'dcla4']
         for name in del_list:
@@ -391,6 +396,7 @@ class ResUNetBaseline_S_DCLA_SLKv2_v3(DCLA_UNet_v3):
         self.UpConv1 = ResConv3D_S_BN(f_list[0]*2, f_list[0], dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
     def forward(self, x):
         return super().forward(x)
+    
 class ResUNetBaseline_S_DCLA_v3(DCLA_UNet_v3):
     __remark__ = """
     [Version]: V2
@@ -454,16 +460,16 @@ class ResUNetBaseline_S_DCLA_MSF_v3(DCLA_UNet_v3):
                 in_channels=in_channels, 
                 out_channels=out_channels,
                 f_list=f_list, 
-                kernel_size=3, 
+                kernel_size=kernel_size, 
                 trilinear=trilinear, 
                 dropout_rate=dropout_rate,
                 norm_type = norm_type,
                 act_type = act_type,
         )
-        self.Conv1 = ResConv3D_S_BN(in_channels, f_list[0], dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
-        self.Conv2 = ResConv3D_S_BN(f_list[0], f_list[1], dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
-        self.Conv3 = ResConv3D_S_BN(f_list[1], f_list[2], dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
-        self.Conv4 = ResConv3D_S_BN(f_list[2], f_list[3], dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
+        self.Conv1 = ResConv3D_S_BN(in_channels, f_list[0], kernel_size=kernel_size, dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
+        self.Conv2 = ResConv3D_S_BN(f_list[0], f_list[1], kernel_size=kernel_size, dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
+        self.Conv3 = ResConv3D_S_BN(f_list[1], f_list[2], kernel_size=kernel_size, dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
+        self.Conv4 = ResConv3D_S_BN(f_list[2], f_list[3], kernel_size=kernel_size, dropout_rate=dropout_rate, norm_type=norm_type, act_type=act_type)
     def forward(self, x):
         return super().forward(x)       
 

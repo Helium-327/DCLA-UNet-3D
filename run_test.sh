@@ -15,14 +15,11 @@ Training_Models=(
                 # "DCLA_UNet_v2_4"\
                 # "ResUNetBaseline_S_SLKv2_MSF_v2"\
                 "DCLA_UNet_v3"\
-                "ResUNetBaseline_S_SLKv2_v3"\
+                # "ResUNetBaseline_S_SLKv2_v3"\
                 "ResUNetBaseline_S_DCLA_SLKv2_v3"\
-                "ResUNetBaseline_S_MSF_v3"\
+                # "ResUNetBaseline_S_MSF_v3"\
                 "ResUNetBaseline_S_DCLA_MSF_v3"\
                 "ResUNetBaseline_S_SLKv2_MSF_v3"
-
-                # "ResUNetBaseline_S_DCLAv1_SLKv2_v2"\
-                # "ResUNetBaseline_S_SLKv1_MSF_v2"\
 
 
 
@@ -53,7 +50,7 @@ for model_name in "${Training_Models[@]}"; do
                    --val_length 60 \
                    --test_length 30 \
                    --epochs 1 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --lr 1e-4 \
                    --wd 1e-5 \
                    --cosine_eta_min 1e-5 \
