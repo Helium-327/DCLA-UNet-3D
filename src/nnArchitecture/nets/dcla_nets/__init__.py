@@ -35,3 +35,12 @@ from .dcla_unet_v2 import (
     ResUNetBaseline_S_SLKv1_MSF_v2,
     ResUNetBaseline_S_SLKv2_MSF_v2
 )
+
+from .dcla_unet_v3 import(
+    DCLA_UNet_v3,
+    ResUNetBaseline_S_SLKv2_v3,
+    ResUNetBaseline_S_DCLA_SLKv2_v3,
+    ResUNetBaseline_S_MSF_v3,
+    ResUNetBaseline_S_DCLA_MSF_v3,
+    ResUNetBaseline_S_SLKv2_MSF_v3
+)

@@ -7,20 +7,19 @@ class ResBlockOfDepthwiseAxialConv3D(nn.Module):
                  in_channels, 
                  out_channels, 
                  kernel_size=3,
-                 use_act = True,
-                 act_op = 'relu',
+                 norm_type='batch',
+                 act_type='relu'
                 ):
         super().__init__()
-        self.use_act = use_act
         self.conv = nn.Sequential(
                 DepthwiseAxialConv3d(
                     in_channels,
                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
                     kernel_size=kernel_size
                 ),
-                nn.BatchNorm3d(out_channels),
+                get_norm(norm_type, out_channels),
         )
-        self.act = nn.ReLU() if act_op == 'relu' else nn.LeakyReLU()
+        self.act = get_act(act_type)
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
     def forward(self, x):
         out = self.conv(x)
@@ -56,31 +55,42 @@ class ResMLP(nn.Module):
         out = self.mlp(x) + identity
         return self.act(out)
     
-    
 class SlimLargeKernelBlockv2(nn.Module): 
     def __init__(self, 
                  in_channels, 
                  out_channels, 
                  kernel_size=3,
                  norm_type = 'batch', # 'batch', 'instance', 'group', 'none'
-                 act_type = 'relu', # 
+                 act_type = 'relu',
+                 depth = 2
                 ):
         super().__init__()
         
-        self.depthwise = ResBlockOfDepthwiseAxialConv3D(in_channels, 
-                                                        out_channels, 
-                                                        kernel_size, 
-                                                        norm_type=norm_type, 
-                                                        act_type=act_type
-                                                        )
-        self.mlp = ResMLP(out_channels, out_channels, norm_type=norm_type, act_type=act_type)
+        conv_block = nn.ModuleList([
+            nn.Conv3d(in_channels, out_channels, 1),
+            get_norm(norm_type, out_channels),
+            get_act(act_type),
+            *[ ResBlockOfDepthwiseAxialConv3D(
+                out_channels, 
+                out_channels, 
+                kernel_size, 
+                norm_type=norm_type, 
+                act_type=act_type
+                ) 
+              for _ in range(depth)
+            ],
+            ResMLP(out_channels, out_channels, norm_type=norm_type, act_type=act_type)
+        ])
+        
+        self.conv = nn.Sequential(*conv_block)
+    
         self.res_scale = nn.Parameter(torch.ones(1)*0.1, requires_grad=True)
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
         self.act = get_act(act_type)
     def forward(self, x):
         identity = self.residual(x) 
-        x = self.depthwise(x) 
-        x = self.mlp(x) * (1-self.res_scale) + identity * self.res_scale
+        x = self.conv(x) 
+        x = x * (1-self.res_scale) + identity * self.res_scale
         return self.act(x)
 
 
@@ -114,6 +124,7 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
         self.use_fusion = use_fusion
         # 创建多个具有不同核的分离卷积分支
         self.sep_branchs = nn.ModuleList([
+            
             nn.Sequential(
                 DepthwiseAxialConv3d(
                     in_channels,
@@ -249,7 +260,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
             self.squeeze_layers.append(
                 nn.Sequential(
                     nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
-                    # get_norm(norm_type, 1),
+                    get_norm(norm_type, 1),
                     get_act(act_type)
                     ))
         for feat_size in feats_size:
@@ -270,7 +281,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                       padding=0
                       ),
             nn.Conv3d(1, 1, kernel_size=1, padding=0),
-            # get_norm(norm_type, 1),
+            get_norm(norm_type, 1),
             get_act(act_type),
         )
         self.fusion = nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2)
