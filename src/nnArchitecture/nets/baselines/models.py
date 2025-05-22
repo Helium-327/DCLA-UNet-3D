@@ -16,6 +16,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
+from utils.test_unet import test_unet
 
 from nnArchitecture.commons import (
     init_weights_3d, 
@@ -290,4 +291,7 @@ class RA_UNet(nn.Module):
         
         out = self.outc(d2)  # [B, out_channels, D, H, W]
         return out
+    
+if __name__ == "__main__":
+    test_unet(model_class=DWResUNet, batch_size=1)   
     

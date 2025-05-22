@@ -83,7 +83,8 @@ class ResBlockOfDepthwiseAxialConv3D(nn.Module):
                  out_channels, 
                  kernel_size=3,
                  use_act = True,
-                 act_op = 'gelu',
+                 norm_type="batch",
+                 act_type = 'gelu',
                 ):
         super().__init__()
         self.use_act = use_act
@@ -93,9 +94,9 @@ class ResBlockOfDepthwiseAxialConv3D(nn.Module):
                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
                     kernel_size=kernel_size
                 ),
-                nn.BatchNorm3d(out_channels),
+                get_norm(norm_type, out_channels),
         )
-        self.act = nn.GELU() if act_op == 'gelu' else nn.LeakyReLU()
+        self.act = get_act(act_type)
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
     def forward(self, x):
         out = self.conv(x)
@@ -159,6 +160,32 @@ class ResMLP(nn.Module):
         out = self.mlp(x) + self.residual(x)
         return self.act(out)
         
+class ResMLPv2(nn.Module):
+    def __init__(self, 
+                 in_channels, 
+                 out_channels,
+                 ratio=4,
+                 reduce=True,
+                 norm_type="batch",
+                 act_type="gelu"
+                ):
+        super().__init__()
+        
+        mid_channels = in_channels // ratio if reduce else in_channels * ratio
+        
+        self.mlp = nn.Sequential(
+            nn.Conv3d(in_channels, mid_channels, kernel_size=1),
+            get_norm(norm_type, mid_channels),
+            get_act(act_type),
+            nn.Conv3d(mid_channels,out_channels,kernel_size=1),
+            get_norm(norm_type, out_channels),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = get_act(act_type)
+    def forward(self, x):
+        out = self.mlp(x) + self.residual(x)
+        return self.act(out)
 
 class SlimLargeKernelBlockv2(nn.Module): 
     def __init__(self, 
@@ -180,7 +207,29 @@ class SlimLargeKernelBlockv2(nn.Module):
     def forward(self, x):
         out = self.depthwise(x) + self.residual(x)
         return self.act(out)
-    
+
+class SlimLargeKernelBlockv3(nn.Module): 
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                 norm_type="batch",
+                 act_type="gelu"
+                ):
+        super().__init__()
+        
+        self.depthwise = nn.Sequential(
+            ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            SwishECA(out_channels, gamma=1, b=2),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = get_act(act_type)
+    def forward(self, x):
+        out = self.depthwise(x) + self.residual(x)
+        return self.act(out)    
+
 class MutilScaleFusionBlock(nn.Module): #(MLP)
     def __init__(self, 
                  in_channels, 
@@ -190,7 +239,8 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
                  dilations=[1,2,3], 
                  fusion_kernel=7,  # 尺度和编码器保持一致
                  ratio=2,               # 4比2好
-                 act_op='gelu',
+                 norm_type="batch",
+                 act_type="gelu",
                  use_attn=True,
                  use_fusion=True
                  ):
@@ -217,8 +267,8 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
                     kernel_size=kernel_size, 
                     dilation=d
                 ),
-                nn.BatchNorm3d(out_channels),
-                nn.GELU()
+                get_norm(norm_type, out_channels),
+                get_act(act_type),
             ) for d in dilations
         ])
         
@@ -233,13 +283,11 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
                     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
                     kernel_size=1
                 ),
-                nn.BatchNorm3d(out_channels)
+                get_norm(norm_type, out_channels)
             ) 
         # 残差连接，如果输入输出通道数不同，使用1x1卷积调整；否则使用恒等映射
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
-        
-        # relu
-        self.act = nn.ReLU() if act_op == 'relu' else nn.GELU()
+        self.act = get_act(act_type)
         
     def forward(self, x):
         out = x
@@ -255,7 +303,7 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
 
         out += self.residual(x)
         return self.act(out)   
-    
+
 class AdaptiveSpatialCondenser(nn.Module):
     def __init__(self, 
                  in_channels=1, 
@@ -619,3 +667,54 @@ class Swish(nn.Module):
 
     def forward(self, x):
         return x * self.sigmoid(x)
+    
+def get_norm(name: str, num_channels: int, **kwargs):
+    """
+    获取指定类型的归一化层
+    
+    Args:
+        name (str): 归一化类型 ('batch', 'instance', 'group', 'layer')
+        num_channels (int): 输入通道数
+        **kwargs: 其他参数（如 group_norm_groups）
+    
+    Returns:
+        nn.Module: 对应的归一化层
+    """
+    if name == 'batch':
+        return nn.BatchNorm3d(num_channels)
+    elif name == "instance":
+        affine = kwargs.get("instance_norm_affine", True)
+        return nn.InstanceNorm3d(num_channels, affine=affine)
+    elif name == "group":
+        groups = kwargs.get("group_norm_groups", 4)  # 默认 4 组
+        assert num_channels % groups == 0, "通道数必须能被组数整除"
+        return nn.GroupNorm(groups, num_channels)
+    elif name == "layer":
+        return nn.LayerNorm(num_channels)
+    else:
+        raise ValueError(f"Unsupported normalization: {name}")
+    
+def get_act(name: str, **kwargs):
+    """
+    获取指定类型的激活函数
+    
+    Args:
+        name (str): 激活函数类型 ('relu', 'gelu', 'leaky_relu', 'swish', 'sigmoid')
+        **kwargs: 其他参数（如 leaky_relu_slope)
+    
+    Returns:
+        nn.Module: 对应的激活函数
+    """
+    if name == 'relu':
+        return nn.ReLU()
+    elif name == 'gelu':
+        return nn.GELU()
+    elif name == "leaky_relu":
+        slope = kwargs.get("leaky_relu_slope", 0.1)
+        return nn.LeakyReLU(negative_slope=slope)
+    elif name == "swish":
+        return Swish()
+    elif name == "sigmoid":
+        return nn.Sigmoid()
+    else:
+        raise ValueError(f"Unsupported activation: {name}")
