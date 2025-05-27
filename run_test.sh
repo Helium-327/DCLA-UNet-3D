@@ -50,11 +50,11 @@ for model_name in "${Training_Models[@]}"; do
                    --train_length 210 \
                    --val_length 60 \
                    --test_length 30 \
-                   --epochs 1 \
+                   --epochs 10 \
                    --batch_size 2 \
-                   --lr 1e-4 \
-                   --wd 1e-5 \
-                   --cosine_eta_min 1e-5 \
+                   --lr 3e-4 \
+                   --wd 2e-5 \
+                   --cosine_eta_min 1e-6 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
                    --num_workers 8 \

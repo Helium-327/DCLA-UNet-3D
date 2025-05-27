@@ -32,8 +32,8 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --slb \
-                   --lr 1e-4 \
-                   --wd 1e-5 \
+                   --lr 3e-4 \
+                   --wd 2e-5 \
                    --cosine_eta_min 1e-6 \
                    --epochs 100 \
                    --cosine_T_max 100 \
