@@ -99,7 +99,16 @@ def load_model(model_name):
         "ResUNetBaseline_S_DCLA_SLKv2_v3":      ResUNetBaseline_S_DCLA_SLKv2_v3(in_channels=4, out_channels=4),
         "ResUNetBaseline_S_MSF_v3":             ResUNetBaseline_S_MSF_v3(in_channels=4, out_channels=4),
         "ResUNetBaseline_S_DCLA_MSF_v3":        ResUNetBaseline_S_DCLA_MSF_v3(in_channels=4, out_channels=4),
-        "ResUNetBaseline_S_SLKv2_MSF_v3":       ResUNetBaseline_S_SLKv2_MSF_v3(in_channels=4, out_channels=4)
+        "ResUNetBaseline_S_SLKv2_MSF_v3":       ResUNetBaseline_S_SLKv2_MSF_v3(in_channels=4, out_channels=4),
+        
+        
+        "DCLA_UNet_final":                      DCLA_UNet_final(in_channels=4, out_channels=4),
+        "BaseLine_S_SLK_final":                 BaseLine_S_SLK_final(in_channels=4, out_channels=4),
+        "BaseLine_S_DCLA_SLK_final":            BaseLine_S_DCLA_SLK_final(in_channels=4, out_channels=4),
+        "BaseLine_S_MSF_final":                 BaseLine_S_MSF_final(in_channels=4, out_channels=4),
+        "BaseLine_S_DCLA_MSF_final":            BaseLine_S_DCLA_MSF_final(in_channels=4, out_channels=4),
+        "BaseLine_S_SLK_MSF_final":             BaseLine_S_SLK_MSF_final(in_channels=4, out_channels=4),
+        
     }
     # 加载模型
     

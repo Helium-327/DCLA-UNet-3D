@@ -28,19 +28,7 @@ from nnArchitecture.commons import (
     UpSample
 )
 
-from nnArchitecture.nets.dcla_nets.dcla_unet_v3.mm import (
-    ResConv3D_S_BN,
-    # SlimLargeKernelBlock as SLK,
-    # SlimLargeKernelBlockv1 as SLKv1,
-    SlimLargeKernelBlockv2 as SLKv2,
-    # SlimLargeKernelBlockv3 as SLKv3,
-    MutilScaleFusionBlock as MSF,
-    DynamicCrossLevelAttention as DCLA,
-    DynamicCrossLevelAttentionv1 as DCLAv1,
-    # DynamicCrossLevelAttentionv2 as DCLAv2,
-    # AttentionGate ,
-    # ChannelsAttentionBlock
-)
+from nnArchitecture.nets.dcla_nets.dcla_unet_v3.mm import *
     
 from utils.test_unet import test_unet
 
@@ -229,24 +217,24 @@ class DCLA_UNet_v3(nn.Module):
                  ):
         super(DCLA_UNet_v3, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv2(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla1 = DCLA(ch_list=f_list[:1], feats_size=[128], min_size=64, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
-        self.Conv2 = SLKv2(f_list[0],f_list[1], kernel_size=kernel_size,norm_type=norm_type, act_type=act_type)
-        self.dcla2 = DCLA(ch_list=f_list[:2], feats_size=[128, 64],  min_size=32, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
-        self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla3 = DCLA(ch_list=f_list[:3], feats_size=[128, 64, 32], min_size=16, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
-        self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
-        self.dcla4 = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.Conv1 = SlimLargeKernelBlockv2(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.dcla1 = DynamicCrossLevelAttention(ch_list=f_list[:1], feats_size=[128], min_size=64, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.Conv2 = SlimLargeKernelBlockv2(f_list[0],f_list[1], kernel_size=kernel_size,norm_type=norm_type, act_type=act_type)
+        self.dcla2 = DynamicCrossLevelAttention(ch_list=f_list[:2], feats_size=[128, 64],  min_size=32, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.Conv3 = SlimLargeKernelBlockv2(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.dcla3 = DynamicCrossLevelAttention(ch_list=f_list[:3], feats_size=[128, 64, 32], min_size=16, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
+        self.Conv4 = SlimLargeKernelBlockv2(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.dcla4 = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=down_kernels, fusion_kernel=1, norm_type=norm_type, act_type=act_type)
 
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7, norm_type=norm_type, act_type=act_type)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7, norm_type=norm_type, act_type=act_type)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7, norm_type=norm_type, act_type=act_type)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         

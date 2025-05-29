@@ -28,19 +28,7 @@ from nnArchitecture.commons import (
     UpSample
 )
 
-from nnArchitecture.nets.dcla_nets.dcla_unet_v2.mm import (
-    ResConv3D_S_BN,
-    SlimLargeKernelBlock as SLK,
-    SlimLargeKernelBlockv1 as SLKv1,
-    SlimLargeKernelBlockv2 as SLKv2,
-    SlimLargeKernelBlockv3 as SLKv3,
-    MutilScaleFusionBlock as MSF,
-    DynamicCrossLevelAttention as DCLA,
-    DynamicCrossLevelAttentionv1 as DCLAv1,
-    # DynamicCrossLevelAttentionv2 as DCLAv2,
-    # AttentionGate ,
-    # ChannelsAttentionBlock
-)
+from nnArchitecture.nets.dcla_nets.dcla_unet_v2.mm import *
     
 from utils.test_unet import test_unet
 
@@ -149,21 +137,21 @@ class DCLA_UNet_v2(nn.Module):
                  ):
         super(DCLA_UNet_v2, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLK(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLK(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLK(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLK(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlock(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlock(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlock(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlock(f_list[2], f_list[3], kernel_size=kernel_size)
         
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -425,21 +413,21 @@ class DCLA_UNet_v2_1(nn.Module):
                  ):
         super(DCLA_UNet_v2_1, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv1(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLKv1(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLKv1(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLKv1(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlockv1(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlockv1(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlockv1(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlockv1(f_list[2], f_list[3], kernel_size=kernel_size)
         
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -596,21 +584,21 @@ class DCLA_UNet_v2_2(nn.Module):
                  ):
         super(DCLA_UNet_v2_2, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv2(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLKv2(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlockv2(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlockv2(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlockv2(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlockv2(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)  # 必须[3, 5, 7]
+        self.dcla = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)  # 必须[3, 5, 7]
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -765,21 +753,21 @@ class DCLA_UNet_v2_3(nn.Module):
                  ):
         super(DCLA_UNet_v2_3, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv2(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLKv2(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLKv2(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLKv2(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlockv2(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlockv2(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlockv2(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlockv2(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLAv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DynamicCrossLevelAttentionv1(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=3, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -844,21 +832,21 @@ class DCLA_UNet_v2_4(nn.Module):
                  ):
         super(DCLA_UNet_v2_4, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv3(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLKv3(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLKv3(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLKv3(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlockv3(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlockv3(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlockv3(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlockv3(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -919,23 +907,23 @@ class DCLA_UNet_v2_5(nn.Module):
                  trilinear=True,
                  dropout_rate=0
                  ):
-        super(DCLA_UNet_v2_4, self).__init__()
+        super(DCLA_UNet_v2_5, self).__init__()
         self.MaxPool = nn.MaxPool3d(kernel_size=2, stride=2)
-        self.Conv1 = SLKv3(in_channels, f_list[0], kernel_size=kernel_size)
-        self.Conv2 = SLKv3(f_list[0], f_list[1], kernel_size=kernel_size)
-        self.Conv3 = SLKv3(f_list[1], f_list[2], kernel_size=kernel_size)
-        self.Conv4 = SLKv3(f_list[2], f_list[3], kernel_size=kernel_size)
+        self.Conv1 = SlimLargeKernelBlockv4(in_channels, f_list[0], kernel_size=kernel_size)
+        self.Conv2 = SlimLargeKernelBlockv4(f_list[0], f_list[1], kernel_size=kernel_size)
+        self.Conv3 = SlimLargeKernelBlockv4(f_list[1], f_list[2], kernel_size=kernel_size)
+        self.Conv4 = SlimLargeKernelBlockv4(f_list[2], f_list[3], kernel_size=kernel_size)
 
-        self.dcla = DCLA(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.dcla = DynamicCrossLevelAttention(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)
         self.Up1 = UpSample(f_list[0], f_list[0], trilinear)
         
-        self.UpConv4 = MSF(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
-        self.UpConv3 = MSF(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
-        self.UpConv2 = MSF(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
-        self.UpConv1 = MSF(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
+        self.UpConv4 = MutilScaleFusionBlock(in_channels=f_list[3]*2, out_channels=f_list[3]//2,  fusion_kernel=7)
+        self.UpConv3 = MutilScaleFusionBlock(in_channels=f_list[2]*2, out_channels=f_list[2]//2,  fusion_kernel=7)
+        self.UpConv2 = MutilScaleFusionBlock(in_channels=f_list[1]*2, out_channels=f_list[1]//2,  fusion_kernel=7)
+        self.UpConv1 = MutilScaleFusionBlock(in_channels=f_list[0]*2, out_channels=f_list[0],     fusion_kernel=7)
         
         self.outc = nn.Conv3d(f_list[0], out_channels, kernel_size=1)
         
@@ -1075,6 +1063,6 @@ class ResUNetBaseline_S_DCLAv1_v2(DCLA_UNet_v2_3):
 
 
 if __name__ == "__main__":
-    test_unet(model_class=DCLA_UNet_v2_4, batch_size=1)   
-    model = DCLA_UNet_v2_4(in_channels=4, out_channels=4)
+    test_unet(model_class=DCLA_UNet_v2_5, batch_size=1)   
+    model = DCLA_UNet_v2_5(in_channels=4, out_channels=4)
     print(model.__remark__)

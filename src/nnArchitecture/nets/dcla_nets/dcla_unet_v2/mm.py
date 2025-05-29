@@ -187,6 +187,34 @@ class ResMLPv2(nn.Module):
         out = self.mlp(x) + self.residual(x)
         return self.act(out)
 
+
+class ResMLPv2(nn.Module):
+    def __init__(self, 
+                 in_channels, 
+                 out_channels,
+                 ratio=4,
+                 reduce=True,
+                 norm_type="batch",
+                 act_type="gelu"
+                ):
+        super().__init__()
+        
+        mid_channels = in_channels // ratio if reduce else in_channels * ratio
+        
+        self.mlp = nn.Sequential(
+            nn.Conv3d(in_channels, mid_channels, kernel_size=1, bias=False),
+            get_norm(norm_type, mid_channels),
+            get_act(act_type),
+            nn.Conv3d(mid_channels,out_channels,kernel_size=1, bias=False),
+            get_norm(norm_type, out_channels),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = get_act(act_type)
+    def forward(self, x):
+        out = self.mlp(x) + self.residual(x)
+        return self.act(out)
+
 class SlimLargeKernelBlockv2(nn.Module): 
     def __init__(self, 
                  in_channels, 
@@ -221,6 +249,34 @@ class SlimLargeKernelBlockv3(nn.Module):
         self.depthwise = nn.Sequential(
             ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
             ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            SwishECA(out_channels, gamma=1, b=2),
+        )
+        
+        self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()
+        self.act = get_act(act_type)
+    def forward(self, x):
+        out = self.depthwise(x) + self.residual(x)
+        return self.act(out)    
+
+
+class SlimLargeKernelBlockv4(nn.Module): 
+    def __init__(self, 
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=3,
+                 norm_type="batch",
+                 act_type="gelu",
+                 dropout_rate=0.1
+                ):
+        super().__init__()
+        
+        self.depthwise = nn.Sequential(
+            ResBlockOfDepthwiseAxialConv3D(in_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            nn.Dropout3d(dropout_rate),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            nn.Dropout3d(dropout_rate),
+            ResBlockOfDepthwiseAxialConv3D(out_channels, out_channels, kernel_size, norm_type=norm_type, act_type=act_type),
+            nn.Dropout3d(dropout_rate),
             SwishECA(out_channels, gamma=1, b=2),
         )
         
