@@ -6,13 +6,18 @@ Training_Models=(
                 # "DCLA_UNet_v2_4"\
                 #  "UNETR"\
                 #  "UNETR_PP"\
-                #  "MogaNet"\
-                "DCLA_UNet_final"\
-                "BaseLine_S_SLK_final"\
-                "BaseLine_S_DCLA_SLK_final"\
-                "BaseLine_S_MSF_final"\
-                "BaseLine_S_DCLA_MSF_final"\
-                "BaseLine_S_SLK_MSF_final"\
+                "BaseLine_S_DCLA_final"\
+                "DCLA_UNet_finalv2"\
+                "DCLA_UNet_finalv3"\
+                # "MogaNet"\
+                # "Mamba3D"\
+                # "SegFormer3D"\
+                # "DCLA_UNet_final"\
+                # "BaseLine_S_SLK_final"\
+                # "BaseLine_S_DCLA_SLK_final"\
+                # "BaseLine_S_MSF_final"\
+                # "BaseLine_S_DCLA_MSF_final"\
+                # "BaseLine_S_SLK_MSF_final"\
                 # "ResUNetBaseline_S_SLKv2_MSF_v3"\
                 # "ResUNetBaseline_S_SLKv2_v3"\
                 # "ResUNetBaseline_S_DCLA_SLKv2_v3"\

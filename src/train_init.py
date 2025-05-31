@@ -54,8 +54,8 @@ def load_model(model_name):
                                         do_ds=False,
                                     ),
         'SegFormer3D':              SegFormer3D(in_channels=4, out_channels=4),
-        # 'Mamba3d':                  Mamba3d(in_channels=4, out_channels=4),
-        # 'MogaNet':                  MogaNet(in_channels=4, out_channels=4),
+        'Mamba3d':                  Mamba3d(in_channels=4, out_channels=4),
+        'MogaNet':                  MogaNet(in_channels=4, out_channels=4),
         
         #! 基线网络
         'DWResUNet':                            DWResUNet(in_channels=4, out_channels=4),
@@ -103,12 +103,15 @@ def load_model(model_name):
         
         
         "DCLA_UNet_final":                      DCLA_UNet_final(in_channels=4, out_channels=4),
+        "DCLA_UNet_finalv2":                    DCLA_UNet_finalv2(in_channels=4, out_channels=4),
+        "DCLA_UNet_finalv3":                    DCLA_UNet_finalv3(in_channels=4, out_channels=4),
+        "DCLA_UNet_finalv4":                    DCLA_UNet_finalv4(in_channels=4, out_channels=4),
         "BaseLine_S_SLK_final":                 BaseLine_S_SLK_final(in_channels=4, out_channels=4),
         "BaseLine_S_DCLA_SLK_final":            BaseLine_S_DCLA_SLK_final(in_channels=4, out_channels=4),
         "BaseLine_S_MSF_final":                 BaseLine_S_MSF_final(in_channels=4, out_channels=4),
         "BaseLine_S_DCLA_MSF_final":            BaseLine_S_DCLA_MSF_final(in_channels=4, out_channels=4),
         "BaseLine_S_SLK_MSF_final":             BaseLine_S_SLK_MSF_final(in_channels=4, out_channels=4),
-        
+        "BaseLine_S_DCLA_final":                BaseLine_S_DCLA_final(in_channels=4, out_channels=4),
     }
     # 加载模型
     

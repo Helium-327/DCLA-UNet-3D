@@ -14,7 +14,10 @@ Training_Models=(
                 # "DCLA_UNet_v2_1"\
                 # "DCLA_UNet_v2_4"\
                 # "ResUNetBaseline_S_SLKv2_MSF_v2"\
-                "DCLA_UNet_v2_4"\
+                "ResUNetBaseline_S"\
+                "MogaNet"\
+                "Mamba3D"\
+                "SegFormer3D"\
                 # "DCLA_UNet_v3"\
                 # # "ResUNetBaseline_S_SLKv2_v3"\
                 # "ResUNetBaseline_S_DCLA_SLKv2_v3"\

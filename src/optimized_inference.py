@@ -573,19 +573,72 @@ if __name__ == '__main__':
     # )
     # inference(**unet_common_config, stride_ratio=0) 
     
-    # # ##! DCLA_UNet_v2_4
+    # # ##! DCLA_UNet_final
     model = load_model('DCLA_UNet_final')
     unet_common_config.update(
         {
             'model':        model,
             'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\[v2_4]DCLA_UNet_v2_4_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_4_final_model.pth")
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\[v2_4]DCLA_UNet_v2_4_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_4_final_model.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
 
-
+    # # ##! BaseLine_S_SLK_final
+    model = load_model('BaseLine_S_SLK_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_SLK_final_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
     
+    # # ##! BaseLine_S_DCLA_SLK_final
+    model = load_model('BaseLine_S_DCLA_SLK_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_DCLA_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_DCLA_SLK_final_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! BaseLine_S_MSF_final
+    model = load_model('BaseLine_S_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_MSF_final_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0)     
+
+    # # ##! BaseLine_S_DCLA_MSF_final
+    model = load_model('BaseLine_S_DCLA_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_DCLA_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_DCLA_MSF_final_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0)     
+    
+    
+    # # ##! BaseLine_S_SLK_MSF_final
+    model = load_model('BaseLine_S_SLK_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\cc_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_SLK_MSF_final_final_model.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0)     
     
     
     

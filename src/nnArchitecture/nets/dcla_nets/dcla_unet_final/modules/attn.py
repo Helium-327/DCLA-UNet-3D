@@ -143,7 +143,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         for ch in self.ch_list:
             self.squeeze_layers.append(
                 nn.Sequential(
-                    nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
+                    nn.Conv3d(in_channels=ch, out_channels=1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
                     nn.InstanceNorm3d(1, affine=True),
                     nn.GELU()
                     ))
@@ -154,7 +154,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                     out_channels=1, 
                     kernel_size=self.kernel_size, 
                     in_size=feat_size, 
-                    min_size=8,
+                    min_size=self.min_size,
                     fusion_mode=self.fusion_mode  # 'concat' or 'add'
                 )
             )
@@ -200,3 +200,4 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         
         out = attn * x
         return out
+    
