@@ -93,6 +93,7 @@ def load_model(model_name):
         'ResUNetBaseline_S_SLKv2_MSF_v2':       ResUNetBaseline_S_SLKv2_MSF_v2(in_channels=4, out_channels=4),
         
         "DCLA_UNet_v2_4":                       DCLA_UNet_v2_4(in_channels=4, out_channels=4),
+        "DCLA_UNet_v2_6":                       DCLA_UNet_v2_6(in_channels=4, out_channels=4),
         
         "DCLA_UNet_v3":                         DCLA_UNet_v3(in_channels=4, out_channels=4),
         "ResUNetBaseline_S_SLKv2_v3":           ResUNetBaseline_S_SLKv2_v3(in_channels=4, out_channels=4),

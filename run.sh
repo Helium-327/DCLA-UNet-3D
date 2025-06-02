@@ -6,9 +6,11 @@ Training_Models=(
                 # "DCLA_UNet_v2_4"\
                 #  "UNETR"\
                 #  "UNETR_PP"\
-                "BaseLine_S_DCLA_final"\
-                "DCLA_UNet_finalv2"\
-                "DCLA_UNet_finalv3"\
+                # "BaseLine_S_DCLA_final"\
+                # "DCLA_UNet_finalv2"\
+                # "DCLA_UNet_finalv3"\
+                # "DCLA_UNet_finalv4"\
+                "DCLA_UNet_v2_6"\
                 # "MogaNet"\
                 # "Mamba3D"\
                 # "SegFormer3D"\
