@@ -10,25 +10,13 @@ Training_Models=(
                 # "DCLA_UNet_finalv2"\
                 # "DCLA_UNet_finalv3"\
                 # "DCLA_UNet_finalv4"\
-                "DCLA_UNet_v2_6"\
-                # "MogaNet"\
-                # "Mamba3D"\
-                # "SegFormer3D"\
-                # "DCLA_UNet_final"\
-                # "BaseLine_S_SLK_final"\
-                # "BaseLine_S_DCLA_SLK_final"\
-                # "BaseLine_S_MSF_final"\
-                # "BaseLine_S_DCLA_MSF_final"\
-                # "BaseLine_S_SLK_MSF_final"\
-                # "ResUNetBaseline_S_SLKv2_MSF_v3"\
-                # "ResUNetBaseline_S_SLKv2_v3"\
-                # "ResUNetBaseline_S_DCLA_SLKv2_v3"\
-                # "ResUNetBaseline_S_MSF_v3"\
-                # "ResUNetBaseline_S_DCLA_MSF_v3"\
+                "BaseLine_S_DCLA_250602"\
+
                 )
 
 
-slb_project="0510_DCLA_UNet_v2"  #TODO: 填写训练的项目名称 (必填)
+slb_project="DCLA_UNet_$(date +%y%m%d)"
+
 # 优先级判断
 if [ -z "$slb_project" ]; then  # 脚本变量未设置
     if [ $# -ge 1 ]; then       # 检查命令行参数
@@ -39,8 +27,8 @@ if [ -z "$slb_project" ]; then  # 脚本变量未设置
         done
     fi
 fi
-echo "项目名称已设置: $slb_project"
 
+echo "项目名称已设置: $slb_project"
 
 # 启用nullglob选项防止无匹配时使用字面量
 shopt -s nullglob
@@ -56,7 +44,7 @@ for model_name in "${Training_Models[@]}"; do
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
-                   --batch_size 2 \
+                   --batch_size 1 \
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project "$slb_project"                    
