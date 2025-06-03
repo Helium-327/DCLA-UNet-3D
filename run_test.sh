@@ -14,10 +14,13 @@ Training_Models=(
                 # "DCLA_UNet_v2_1"\
                 # "DCLA_UNet_v2_4"\
                 # "ResUNetBaseline_S_SLKv2_MSF_v2"\
-                "ResUNetBaseline_S"\
-                "MogaNet"\
-                "Mamba3D"\
-                "SegFormer3D"\
+                # "ResUNetBaseline_S"\
+                # "MogaNet"\
+                # "Mamba3D"\
+                # "SegFormer3D"\
+                # "DCLA_UNet_250603_v2"\
+                "DCLA_UNet_withoutDCLA_v2_7"\
+
                 # "DCLA_UNet_v3"\
                 # # "ResUNetBaseline_S_SLKv2_v3"\
                 # "ResUNetBaseline_S_DCLA_SLKv2_v3"\
@@ -29,7 +32,7 @@ Training_Models=(
 
                 )
 
-slb_project="lr2e-4_wd1e-5_mlr1e-5_epochs200_T_max100"  #TODO: 填写训练的项目名称 (必填)
+slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)
 # 优先级判断
 if [ -z "$slb_project" ]; then  # 脚本变量未设置
     if [ $# -ge 1 ]; then       # 检查命令行参数
@@ -54,7 +57,7 @@ for model_name in "${Training_Models[@]}"; do
                    --val_length 60 \
                    --test_length 30 \
                    --epochs 10 \
-                   --batch_size 2 \
+                   --batch_size 1 \
                    --lr 3e-4 \
                    --wd 2e-5 \
                    --cosine_eta_min 1e-6 \
