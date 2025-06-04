@@ -93,6 +93,7 @@ class DepthwiseAxialConv3d(nn.Module):
         x = self.pointwise(x)
         return x
     
+
 class ResConv3D_S_BN(nn.Module):
     """带有残差连接的单分支3D卷积块(Conv3D -> BN结构)
     
@@ -125,4 +126,63 @@ class ResConv3D_S_BN(nn.Module):
     def forward(self, x):
         out = self.double_conv(x) + self.residual(x)
         return self.relu(out)
+
+
+class ResNeXtConv(nn.Module):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        stride=1,
+        expand_rate=2,
+        kernel_size=3
+    ):
+        super().__init__()
+        self.stride = stride
+        self.conv_list = nn.ModuleList()
+
+        self.conv_list.append(
+            nn.Sequential(
+                nn.Conv3d(in_channels, in_channels * expand_rate, 1, 1, 0),
+                nn.InstanceNorm3d(in_channels * expand_rate, affine=True),
+                nn.LeakyReLU(inplace=True),
+            )
+        )
+        self.conv_list.append(
+            nn.Sequential(
+                nn.Conv3d(
+                    in_channels * expand_rate,
+                    in_channels * expand_rate,
+                    kernel_size,
+                    stride,
+                    kernel_size//2,
+                    groups=in_channels,
+                ),
+                nn.InstanceNorm3d(in_channels * expand_rate, affine=True),
+                nn.LeakyReLU(inplace=True),
+            )
+        )
+        self.conv_list.append(
+            nn.Sequential(
+                nn.Conv3d(in_channels * expand_rate, out_channels, 1, 1, 0),
+                nn.InstanceNorm3d(out_channels, affine=True),
+                nn.LeakyReLU(inplace=True),
+            )
+        )
+
+        self.residual = in_channels == out_channels
+        self.act = nn.LeakyReLU(inplace=True)
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv3d):
+                nn.init.trunc_normal_(m.weight, std=0.06)
+                nn.init.constant_(m.bias, 0)
+
+    def forward(self, x):
+        res = x
+        x = self.conv_list[0](x)
+        x = self.conv_list[1](x)
+        x = self.conv_list[2](x)
+        x = x + res if self.residual and self.stride == 1 else x
+        return x
     

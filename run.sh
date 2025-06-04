@@ -10,8 +10,9 @@ Training_Models=(
                 # "DCLA_UNet_finalv2"\
                 # "DCLA_UNet_finalv3"\
                 # "DCLA_UNet_finalv4"\
-                "BaseLine_S_DCLA_250602"\
-
+                # "BaseLine_S_DCLA_250602"\
+                "Mamba3d"\
+                "UNETR"\
                 )
 
 
@@ -44,7 +45,7 @@ for model_name in "${Training_Models[@]}"; do
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project "$slb_project"                    

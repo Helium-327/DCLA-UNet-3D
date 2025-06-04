@@ -1219,7 +1219,6 @@ class DCLA_UNet_withoutDCLA_v2_6(DCLA_UNet_v2_6):
     def forward(self, x):
         return super().forward(x)       
 
-
 class DCLA_UNet_withoutDCLA_v2_7(DCLA_UNet_v2_7):
     __remark__ = """
     [Version]: V2.7
@@ -1244,8 +1243,7 @@ class DCLA_UNet_withoutDCLA_v2_7(DCLA_UNet_v2_7):
         super(DCLA_UNet_withoutDCLA_v2_7, self).__init__()
         if hasattr(self, "dcla"):
             delattr(self, "dcla")
-            
-        
+    
     def forward(self, x):
         return super().forward(x)     
 

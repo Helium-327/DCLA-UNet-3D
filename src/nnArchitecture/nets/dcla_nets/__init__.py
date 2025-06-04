@@ -9,3 +9,5 @@ from .dcla_unet_final import *
 from .dcla_unet_250602 import *
 
 from .dcla_unet_250603 import *
+
+from .dcla_unet_250604 import *

@@ -19,8 +19,8 @@ Training_Models=(
                 # "Mamba3D"\
                 # "SegFormer3D"\
                 # "DCLA_UNet_250603_v2"\
-                "DCLA_UNet_withoutDCLA_v2_7"\
-
+                # "DCLA_UNet_250604"\
+                "DCLA_UNet_withoutDCLA_250604"\
                 # "DCLA_UNet_v3"\
                 # # "ResUNetBaseline_S_SLKv2_v3"\
                 # "ResUNetBaseline_S_DCLA_SLKv2_v3"\
@@ -67,9 +67,6 @@ for model_name in "${Training_Models[@]}"; do
                    --interval 1 \
                    --slb_project $slb_project
 done
-
-# 禁用nullglob选项（恢复默认设置）
-shopt -u nullglob
 
 # 关机(linux)
 # echo "✅ 训练完成，正在关机"

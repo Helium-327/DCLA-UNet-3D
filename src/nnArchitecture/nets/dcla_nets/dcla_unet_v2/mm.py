@@ -793,7 +793,7 @@ class ResDAConv3d(nn.Module):
         x = x_avg + x  # 残差连接
         
         x = self.pointwise(x)
-        x = self.dropout(x)
+        # x = self.dropout(x)
         return x
     
     

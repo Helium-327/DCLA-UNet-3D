@@ -119,7 +119,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                  feats_size, 
                  min_size=8, 
                  squeeze_kernel=1,
-                 down_kernel=[3,5,7], 
+                 down_kernel=[7], 
                  fusion_kernel=1,
                  fusion_mode='add'
                  ):

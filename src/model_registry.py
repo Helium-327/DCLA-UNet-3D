@@ -116,9 +116,18 @@ model_register = {
         "BaseLine_S_DCLA_250603":               BaseLine_S_DCLA_250603(**BASE_ARGS),
     },
     
+    "DCLA_UNet 250604": {
+      "ResUNeXt":                               ResUNeXt(**BASE_ARGS),
+      "DCLA_UNet_250604":                       DCLA_UNet_250604(**BASE_ARGS),
+      "DCLA_UNet_withoutDCLA_250604":           DCLA_UNet_withoutDCLA_250604(**BASE_ARGS),
+      "Base_ResNeXt_250604":                    Base_ResNeXt_250604(**BASE_ARGS),
+      "Base_ResNeXt_DCLA_250604":               Base_ResNeXt_DCLA_250604(**BASE_ARGS),
+      "Base_MSF_250604":                        Base_MSF_250604(**BASE_ARGS),
+      "Base_MSF_DCLA_250604":                   Base_MSF_DCLA_250604(**BASE_ARGS),
+    },
+    
     "ConvNeXt": {
-        "ResUNeXt":                             ResUNeXt(**BASE_ARGS),
-        "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),
+        # "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),
         
     }
     
