@@ -11,3 +11,7 @@ from .dcla_unet_250602 import *
 from .dcla_unet_250603 import *
 
 from .dcla_unet_250604 import *
+
+from .dcla_unet_250605 import *
+
+from .dcla_unet_250606 import *

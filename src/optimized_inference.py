@@ -68,7 +68,6 @@ def load_data(test_csv, local_train=False, test_length=10, batch_size=1, num_wor
 def inference(
     test_df: pd.DataFrame,
     test_loader: torch.utils.data.DataLoader,
-    output_root: str,
     model: torch.nn.Module,
     metricer: EvaluationMetrics,
     scaler: torch.cuda.amp.GradScaler,
@@ -96,10 +95,11 @@ def inference(
     start_time = time.time()
     
     # 模型加载优化
-    model, optimizer, scaler, _, _, _ = load_checkpoint(model, optimizer, scaler, ckpt_path, load_weights_only=False)
+    model, optimizer, scaler, _, _, _ = load_checkpoint(model, optimizer, scaler, ckpt_path, load_weights_only=False, strict=False)
     model.to(device)
     
     # 创建输出目录
+    output_root = os.path.dirname(ckpt_path)
     output_path, new_ckpt_path = init_output_dir(output_root, model, ckpt_path)
     
     # 异步执行器
@@ -237,7 +237,7 @@ def slide_window_pred(inputs, model, roi_size=128, overlap=0, mode="constant"):
 def init_output_dir(output_root: str, model: Model, ckpt_path: str) -> Tuple[str, str]:
     """初始化输出目录结构"""
     timestamp = f"{pd.Timestamp.now():%Y%m%d%H%M%S}"
-    output_path = os.path.join(output_root, f"{model.__class__.__name__}_{timestamp}")
+    output_path = os.path.join(os.path.dirname(output_root), "output", f"{model.__class__.__name__}_{timestamp}")
     os.makedirs(output_path, exist_ok=True)
     
     # 复制检查点文件
@@ -352,8 +352,8 @@ if __name__ == '__main__':
     
     csv_file = '/root/workspace/BraTS_Solution/data/test.csv'
     
-    out_dir = '/mnt/d/results/2_消融实验结果/【final】DCLA_UNet/outputs'
-    os.makedirs(out_dir, exist_ok=True)
+    # out_dir = '/mnt/d/results/2_消融实验结果/【final】DCLA_UNet/outputs'
+    # os.makedirs(out_dir, exist_ok=True)
         
     model_names = ['UNet3D', 'AttentionUNet3D']
     test_df = pd.read_csv(csv_file)
@@ -363,7 +363,6 @@ if __name__ == '__main__':
     unet_common_config = {
         'test_df': test_df,
         'test_loader': test_loader,
-        'output_root': out_dir,
         'model': None,
         'metricer': EvaluationMetrics(),
         'scaler': GradScaler(),
@@ -376,22 +375,23 @@ if __name__ == '__main__':
     # unet_common_config.update(
     #     {
     #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\UNet3D_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\UNet3D_final_model.pth")
+    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=1e-5),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.836】UNet3D_2025-03-29_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch88_loss0.1335_dice0.8669_20250330030428.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
 
     
-    # # ##! AttUNet3D
+    # # # ##! AttUNet3D
     # model = load_model('AttUNet3D')
     # unet_common_config.update(
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\AttUNet3D_2025-05-28_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\AttUNet3D_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.86】AttUNet3D_2025-05-28_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch86_loss0.1163_dice0.8839_20250528072214.pth")
     #     }
     # )
+    
     # inference(**unet_common_config, stride_ratio=0)
     
     # # ##! UNETR
@@ -400,11 +400,21 @@ if __name__ == '__main__':
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]UNETR_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\UNETR_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.855】UNETR_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch93_loss0.1329_dice0.8698_20250409195026.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
     
+    # # ##! UNETR
+    # model = load_model('UNETR_PP')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.867】UNETR_PP_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch85_loss0.1129_dice0.8886_20250529094501.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0)
 
     # # ##! Mamba3D
     # model = load_model('Mamba3d')
@@ -412,7 +422,7 @@ if __name__ == '__main__':
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]Mamba3d_2025-04-01_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch85_loss0.1296_dice0.8713_20250401063106.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.816】Mamba3d_2025-05-15_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch88_loss0.1732_dice0.8276_20250516040958.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
@@ -423,7 +433,7 @@ if __name__ == '__main__':
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]MogaNet_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\MogaNet_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.859】MogaNet_2025-04-09_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch76_loss0.1183_dice0.8832_20250409124258.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
@@ -434,11 +444,10 @@ if __name__ == '__main__':
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\1_对比网络结果\[√]SegFormer3D_2025-03-31_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\SegFormer3D_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.844】SegFormer3D_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch99_loss0.1349_dice0.8656_20250530181201.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0)
-
 
     
     # # ##! ResUNetBaseline_S
@@ -447,210 +456,114 @@ if __name__ == '__main__':
     #     {
     #         'model':        model,
     #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【S】Baseline\权重文件\【S】ResUNetBaseline_S_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! DCLA_UNet_v2
-    # model = load_model('DCLA_UNet_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】DCLA_UNet_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! DCLA_UNet_v2_1
-    # model = load_model('DCLA_UNet_v2_1')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_1】DCLA_UNet_v2_1_2025-05-16_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_1_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! ResUNetBaseline_S_SLK_LiteMSF_v2
-    # model = load_model('ResUNetBaseline_S_SLK_LiteMSF_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_LiteMSF_v2_2025-05-11_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_LiteMSF_v2_final_model.pth")
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.869】ResUNetBaseline_S_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch75_loss0.1118_dice0.8887_20250530022616.pth")
     #     }
     # )
     # inference(**unet_common_config, stride_ratio=0) 
     
     
-    # # ##! ResUNetBaseline_S_SLK_v2
-    # model = load_model('ResUNetBaseline_S_SLK_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLK_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! ResUNetBaseline_S_DCLA_SLK_v2
-    # model = load_model('ResUNetBaseline_S_DCLA_SLK_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_DCLA_SLK_v2_2025-05-14_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLA_SLK_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! ResUNetBaseline_S_MSF_v2
-    # model = load_model('ResUNetBaseline_S_MSF_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2】ResUNetBaseline_S_MSF_v2_2025-05-15_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_MSF_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    # # ##! ResUNetBaseline_S_SLKv2_v2
-    # model = load_model('ResUNetBaseline_S_SLKv2_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_3(SLK_3)】ResUNetBaseline_S_SLKv2_v2_2025-05-17_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLKv2_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! ResUNetBaseline_S_SLKv2_MSF_v2
-    # model = load_model('ResUNetBaseline_S_SLKv2_MSF_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_3(SLK_3)】ResUNetBaseline_S_SLKv2_MSF_v2_2025-05-18_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_SLKv2_MSF_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-
-    # # ##! ResUNetBaseline_S_DCLAv1_SLKv2_v2
-    # model = load_model('ResUNetBaseline_S_DCLAv1_SLKv2_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_3(SLK_3)】ResUNetBaseline_S_DCLAv1_SLKv2_v2_2025-05-18_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLAv1_SLKv2_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! ResUNetBaseline_S_DCLAv1_MSF_v2
-    # model = load_model('ResUNetBaseline_S_DCLAv1_MSF_v2')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_3(SLK_3)】ResUNetBaseline_S_DCLAv1_MSF_v2_2025-05-19_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\ResUNetBaseline_S_DCLAv1_MSF_v2_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # # ##! DCLA_UNet_v2_3
-    # model = load_model('DCLA_UNet_v2_3')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【v2】DCLA_UNet\权重文件\【v2_3(SLK_3)】DCLA_UNet_v2_3_2025-05-18_lr0.0001_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_3_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
+    # """ 消融实验"""
     # # # ##! DCLA_UNet_final
-    # model = load_model('DCLA_UNet_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\[v2_4]DCLA_UNet_v2_4_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\DCLA_UNet_v2_4_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-
-    # # # ##! BaseLine_S_SLK_final
-    # model = load_model('BaseLine_S_SLK_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_SLK_final_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # # ##! BaseLine_S_DCLA_SLK_final
-    # model = load_model('BaseLine_S_DCLA_SLK_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_DCLA_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_DCLA_SLK_final_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0) 
-    
-    # # # ##! BaseLine_S_MSF_final
-    # model = load_model('BaseLine_S_MSF_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_MSF_final_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0)     
-
-    # # # ##! BaseLine_S_DCLA_MSF_final
-    # model = load_model('BaseLine_S_DCLA_MSF_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_DCLA_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_DCLA_MSF_final_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0)     
-    
-    
-    # # # ##! BaseLine_S_SLK_MSF_final
-    # model = load_model('BaseLine_S_SLK_MSF_final')
-    # unet_common_config.update(
-    #     {
-    #         'model':        model,
-    #         'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\cc_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_SLK_MSF_final_final_model.pth")
-    #     }
-    # )
-    # inference(**unet_common_config, stride_ratio=0)     
-
-    # # ##! BaseLine_S_DCLA_final
-    model = load_model('BaseLine_S_DCLA_final')
+    model = load_model('DCLA_UNet_final')
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=2e-5),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\2_消融实验结果\【final】DCLA_UNet\BaseLine_S_DCLA_final_2025-05-31_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\BaseLine_S_DCLA_final_final_model.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】DCLA_UNet_final_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1099_dice0.8907_20250528021008.pth")
         }
     )
-    inference(**unet_common_config, stride_ratio=0)     
+    inference(**unet_common_config, stride_ratio=0) 
     
+    # # # ##! DCLA_UNet_withoutDCLA_v2_6
+    # model = load_model('DCLA_UNet_withoutDCLA_v2_6')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.872】DCLA_UNet_withoutDCLA_v2_6_2025-06-03_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch86_loss0.1141_dice0.8865_20250603154925.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+
+    # # # ##! BaseLine_S_DCLA_v2_4
+    # model = load_model('BaseLine_S_DCLA_v2_4')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】DCLA_UNet_v2_4_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1099_dice0.8907_20250528021008.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # # ##! BaseLine_S_DCLA_v2_6
+    # model = load_model('BaseLine_S_DCLA_v2_6')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.876】BaseLine_S_DCLA_final_2025-05-31_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch85_loss0.1127_dice0.8877_20250601021749.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    
+    # ##! BaseLine_S_SLK_final ✅
+    model = load_model('BaseLine_S_SLK_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.833】BaseLine_S_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1514_dice0.8490_20250530110854.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! BaseLine_S_DCLA_SLK_final
+    model = load_model('BaseLine_S_DCLA_SLK_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.875】BaseLine_S_DCLA_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch100_loss0.1120_dice0.8888_20250530160659.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! BaseLine_S_MSF_final
+    model = load_model('BaseLine_S_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.884】BaseLine_S_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch73_loss0.1061_dice0.8946_20250530205635.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! BaseLine_S_DCLA_MSF_final
+    model = load_model('BaseLine_S_DCLA_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.885】BaseLine_S_DCLA_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch92_loss0.1097_dice0.8911_20250531045135.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! BaseLine_S_SLK_MSF_final
+    model = load_model('BaseLine_S_SLK_MSF_final')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.881】BaseLine_S_SLK_MSF_final_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch84_loss0.1114_dice0.8892_20250530052055.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+
     
     
     

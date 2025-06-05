@@ -81,11 +81,10 @@ class ResUNetBaseline_S(nn.Module):
 
 class DCLA_UNet_final(nn.Module):
     __remark__ = """
-    [Version]: final version
+    [Version]: final
     [Author]: Junyin Xiong
     [Features]
-    • 编码器使用SLK大核卷积 (kernel_size=7)
-    • 集成DCLA跨层注意力机制(Down_kernel=3, 5, 7) + 残差连接
+    • 使用MSF做编码器
     • 总参数量: 871.313K
     • FLOPs: 55.512G
     [Changes]
@@ -134,7 +133,7 @@ class DCLA_UNet_final(nn.Module):
         x4 = self.Conv4(x4)      # [B, 256, D/8, H/8, W/8]
         x5 = self.MaxPool(x4)
     
-        x5 = self.dcla([x1, x2, x3, x4], x5)  if hasattr(self,"dcla") else x5# [B, 256, D/8, H/8, W/8]
+        x5 = self.dcla([x1, x2, x3, x4], x5) if hasattr(self, 'dcla') else x5 # [B, 256, D/8, H/8, W/8]
         
         # Decoder with Attention
         d5 = self.Up4(x5)               # [B, 256, D/8, H/8, W/8]
@@ -154,7 +153,7 @@ class DCLA_UNet_final(nn.Module):
         d2 = self.UpConv1(d2)    # [B, 32, D, H, W]
         
         out = self.outc(d2)  # [B, out_channels, D, H, W]
-        return out  
+        return out    
         
 class DCLA_UNet_finalv2(nn.Module):
     __remark__ = """
@@ -592,7 +591,7 @@ class BaseLine_S_DCLA_final(DCLA_UNet_final):
         return super().forward(x)      
     
 if __name__ == "__main__":
-    test_unet(model_class=DCLA_UNet_finalv4, batch_size=1)   
-    model = DCLA_UNet_finalv4(in_channels=4, out_channels=4)
+    test_unet(model_class=BaseLine_S_SLK_final, batch_size=1)   
+    model = BaseLine_S_SLK_final(in_channels=4, out_channels=4)
     print(model.__remark__)
     

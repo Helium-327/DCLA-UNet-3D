@@ -125,6 +125,26 @@ model_register = {
       "Base_MSF_250604":                        Base_MSF_250604(**BASE_ARGS),
       "Base_MSF_DCLA_250604":                   Base_MSF_DCLA_250604(**BASE_ARGS),
     },
+    "DCLA_UNet 250605": {
+    #   "ResUNeXt":                               ResUNeXt(**BASE_ARGS),
+      "DCLA_UNet_250605":                         DCLA_UNet_250605(**BASE_ARGS),
+    #   "DCLA_UNet_250605v2":                       DCLA_UNet_250605v2(**BASE_ARGS),
+      "DCLA_UNet_withoutDCLA_250605":           DCLA_UNet_withoutDCLA_250605(**BASE_ARGS),
+      "Base_ResNeXt_250605":                    Base_ResNeXt_250605(**BASE_ARGS),
+      "Base_ResNeXt_DCLA_250605":               Base_ResNeXt_DCLA_250605(**BASE_ARGS),
+      "Base_MSF_250605":                        Base_MSF_250605(**BASE_ARGS),
+      "Base_MSF_DCLA_250605":                   Base_MSF_DCLA_250605(**BASE_ARGS),
+    },
+    "DCLA_UNet 250606": {
+    #   "ResUNeXt":                               ResUNeXt(**BASE_ARGS),
+      "DCLA_UNet_250606":                         DCLA_UNet_250606(**BASE_ARGS),
+    #   "DCLA_UNet_250605v2":                       DCLA_UNet_250605v2(**BASE_ARGS),
+      "DCLA_UNet_withoutDCLA_250606":           DCLA_UNet_withoutDCLA_250606(**BASE_ARGS),
+      "Base_ResNeXt_250606":                    Base_ResNeXt_250606(**BASE_ARGS),
+      "Base_ResNeXt_DCLA_250606":               Base_ResNeXt_DCLA_250606(**BASE_ARGS),
+      "Base_MSF_250606":                        Base_MSF_250606(**BASE_ARGS),
+      "Base_MSF_DCLA_250606":                   Base_MSF_DCLA_250606(**BASE_ARGS),
+    },
     
     "ConvNeXt": {
         # "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),

@@ -32,10 +32,11 @@ def load_checkpoint(
     checkpoint_path:str,
     scheduler=None,
     load_weights_only= True,
+    strict=True
 ):
     try:
         checkpoint = torch.load(checkpoint_path, weights_only=load_weights_only)
-        model.load_state_dict(checkpoint['model_state_dict'], strict=False)
+        model.load_state_dict(checkpoint['model_state_dict'], strict=strict)
         
         # 智能优化器加载
         if 'optimizer_state_dict' in checkpoint:

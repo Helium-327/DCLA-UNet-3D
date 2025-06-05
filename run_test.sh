@@ -1,34 +1,20 @@
 #!/bin/bash
 
 Training_Models=(
-                # 先确定SLK
-                # "ResUNetBaseline_S_SLKv1_v2"\
-
-                # ResUNetBaseline_S_SLKv2_MSF_v2
-                # "ResUNetBaseline_S_SLKv2_v2"\
-                # "ResUNetBaseline_S_DCLA_SLKv2_v2"\
-                # "DCLA_UNet_v2_2"\
-                # "ResUNetBaseline_S_SLKv2_MSF_v2"\
-                
-                # 最终
-                # "DCLA_UNet_v2_1"\
-                # "DCLA_UNet_v2_4"\
-                # "ResUNetBaseline_S_SLKv2_MSF_v2"\
-                # "ResUNetBaseline_S"\
-                # "MogaNet"\
-                # "Mamba3D"\
-                # "SegFormer3D"\
-                # "DCLA_UNet_250603_v2"\
-                # "DCLA_UNet_250604"\
-                "DCLA_UNet_withoutDCLA_250604"\
+                # "DCLA_UNet_250605"\
+                "DCLA_UNet_250606"\
+                # "DCLA_UNet_withoutDCLA_250604"\
+                # "ResUNeXt"\
+                # "Base_ResNeXt_250604"\
+                # "Base_ResNeXt_DCLA_250604"\
+                # "Base_MSF_250604"\
+                # "Base_MSF_DCLA_250604"\
                 # "DCLA_UNet_v3"\
                 # # "ResUNetBaseline_S_SLKv2_v3"\
                 # "ResUNetBaseline_S_DCLA_SLKv2_v3"\
                 # # "ResUNetBaseline_S_MSF_v3"\
                 # "ResUNetBaseline_S_DCLA_MSF_v3"\
                 # "ResUNetBaseline_S_SLKv2_MSF_v3"
-
-
 
                 )
 
@@ -58,9 +44,9 @@ for model_name in "${Training_Models[@]}"; do
                    --test_length 30 \
                    --epochs 10 \
                    --batch_size 1 \
-                   --lr 3e-4 \
-                   --wd 2e-5 \
-                   --cosine_eta_min 1e-6 \
+                   --lr 5e-4 \
+                   --wd 1e-5 \
+                   --cosine_eta_min 1e-5 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
                    --num_workers 8 \

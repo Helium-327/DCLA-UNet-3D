@@ -11,8 +11,14 @@ Training_Models=(
                 # "DCLA_UNet_finalv3"\
                 # "DCLA_UNet_finalv4"\
                 # "BaseLine_S_DCLA_250602"\
-                "Mamba3d"\
-                "UNETR"\
+                # "DCLA_UNet_250604"\
+                # "DCLA_UNet_withoutDCLA_250604"\
+                # "ResUNeXt"\
+                # "Base_ResNeXt_250604"\
+                # "Base_ResNeXt_DCLA_250604"\
+                # "Base_MSF_250604"\
+                # "Base_MSF_DCLA_250604"\
+                "Base_ResNeXt_250605"\
                 )
 
 
@@ -39,13 +45,13 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --slb \
-                   --lr 3e-4 \
-                   --wd 2e-5 \
-                   --cosine_eta_min 1e-6 \
+                   --lr 5e-4 \
+                   --wd 1e-5 \
+                   --cosine_eta_min 1e-5 \
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
-                   --batch_size 2 \
+                   --batch_size 1 \
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project "$slb_project"                    

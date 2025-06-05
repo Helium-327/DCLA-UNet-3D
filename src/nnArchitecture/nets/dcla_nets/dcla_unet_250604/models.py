@@ -116,7 +116,6 @@ class ResUNeXt(nn.Module):
         self.Conv2 = ResNeXtConv(f_list[0], f_list[1], kernel_size=kernel_size)
         self.Conv3 = ResNeXtConv(f_list[1], f_list[2], kernel_size=kernel_size)
         self.Conv4 = ResNeXtConv(f_list[2], f_list[3], kernel_size=kernel_size)
-        
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)

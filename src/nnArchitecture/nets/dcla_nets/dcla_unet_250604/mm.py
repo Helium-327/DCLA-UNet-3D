@@ -77,7 +77,6 @@ class SwishECA(nn.Module):
         attn = self.ca((self.avg_pool(x) + self.max_pool(x)).view(b, 1, -1)).view(b, -1, 1, 1, 1)
         return attn * x
     
-    
 class ResNeXtConv(nn.Module):
     def __init__(
         self,
