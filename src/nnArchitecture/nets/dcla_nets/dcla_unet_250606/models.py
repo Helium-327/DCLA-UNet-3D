@@ -289,7 +289,10 @@ class DCLA_UNet_250606(nn.Module):
                       norm_type="batch", 
                       act_type="relu"
                       ):
-        return MutilScaleFusionBlock(in_channels, out_channels, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        return nn.Sequential(
+            EfficientAttentionBlock(in_channels, ratio=16, spatial_kernal=7),
+            MutilScaleFusionBlock(in_channels, out_channels, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        )
 
     def forward(self, x):
         # Encoder

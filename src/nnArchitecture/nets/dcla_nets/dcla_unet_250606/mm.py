@@ -727,15 +727,13 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
         """
         super().__init__()
     
-        # 创建多个具有不同核的分离卷积分支
-        self.res_efficient_attn = EfficientAttentionBlock(in_channels, ratio=16, spatial_kernal=7)
-        
         self._conv = nn.Sequential(
             nn.Conv3d(in_channels, out_channels, 1),
             get_norm(norm_type, out_channels),
             get_act(act_type)
         )
         
+        # 创建多个具有不同核的分离卷积分支
         self.res_efficient_ms_block = EfficientResMultiScaleBlock(
                     out_channels, 
                     out_channels, 
@@ -752,7 +750,6 @@ class MutilScaleFusionBlock(nn.Module): #(MLP)
         )
         
     def forward(self, x):
-        x = self.res_efficient_attn(x)
         x = self._conv(x)
         x = self.res_efficient_ms_block(x)
         x = self.conv_(x)
