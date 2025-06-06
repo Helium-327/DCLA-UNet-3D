@@ -287,9 +287,9 @@ class DCLA_UNet_250606(nn.Module):
                       out_channels, 
                       se_ratio=8,
                       norm_type="batch", 
-                      act_type="gelu"
+                      act_type="relu"
                       ):
-        return MutilScaleFusionBlock(in_channels, out_channels, dilations=[1, 2, 3], fusion_kernel=7, norm_type=norm_type, act_type=act_type)
+        return MutilScaleFusionBlock(in_channels, out_channels, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
 
     def forward(self, x):
         # Encoder
