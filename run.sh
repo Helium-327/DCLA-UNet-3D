@@ -6,6 +6,12 @@ Training_Models=(
                 # "DCLA_UNet_v2_4"\
                 #  "UNETR"\
                 #  "UNETR_PP"\
+                "SLK_UNet_250607"\
+                "SLK_SE_UNet_250607"\
+                "MSF_UNet_250607"\
+                "SLK_MSF_UNet_250607"\
+                "SLK_MSF_SE_UNet_250607"\
+                "SLK_MSF_SE_DCLA_UNet_250607"\
                 # "BaseLine_S_DCLA_final"\
                 # "DCLA_UNet_finalv2"\
                 # "DCLA_UNet_finalv3"\
@@ -18,7 +24,6 @@ Training_Models=(
                 # "Base_ResNeXt_DCLA_250604"\
                 # "Base_MSF_250604"\
                 # "Base_MSF_DCLA_250604"\
-                "Base_ResNeXt_250605"\
                 )
 
 
@@ -45,9 +50,9 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --slb \
-                   --lr 5e-4 \
-                   --wd 1e-5 \
-                   --cosine_eta_min 1e-5 \
+                   --lr 3e-4 \
+                   --wd 2e-5 \
+                   --cosine_eta_min 1e-6 \
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \

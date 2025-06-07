@@ -1,9 +1,10 @@
 #!/bin/bash
 
 Training_Models=(
-                # "DCLA_UNet_250605"\
-                "DCLA_UNet_250606"\
-                # "DCLA_UNet_withoutDCLA_250604"\
+                # "SLK_UNet"\
+                "SLK_MSF_UNet"\
+                "SLK_MSF_DCLA_UNet"\
+                # "DCLA_UNet_withoutDCLA_250606"\
                 # "ResUNeXt"\
                 # "Base_ResNeXt_250604"\
                 # "Base_ResNeXt_DCLA_250604"\
@@ -44,9 +45,9 @@ for model_name in "${Training_Models[@]}"; do
                    --test_length 30 \
                    --epochs 10 \
                    --batch_size 1 \
-                   --lr 5e-4 \
-                   --wd 1e-5 \
-                   --cosine_eta_min 1e-5 \
+                   --lr 3e-4 \
+                   --wd 2e-5 \
+                   --cosine_eta_min 1e-6 \
                    --cosine_T_max 100 \
                    --early_stop_patience 5 \
                    --num_workers 8 \
