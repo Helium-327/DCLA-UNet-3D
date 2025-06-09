@@ -1,22 +1,9 @@
 #!/bin/bash
 
 Training_Models=(
-                # "SLK_UNet"\
-                "SLK_MSF_UNet"\
-                "SLK_MSF_DCLA_UNet"\
-                # "DCLA_UNet_withoutDCLA_250606"\
-                # "ResUNeXt"\
-                # "Base_ResNeXt_250604"\
-                # "Base_ResNeXt_DCLA_250604"\
-                # "Base_MSF_250604"\
-                # "Base_MSF_DCLA_250604"\
-                # "DCLA_UNet_v3"\
-                # # "ResUNetBaseline_S_SLKv2_v3"\
-                # "ResUNetBaseline_S_DCLA_SLKv2_v3"\
-                # # "ResUNetBaseline_S_MSF_v3"\
-                # "ResUNetBaseline_S_DCLA_MSF_v3"\
-                # "ResUNetBaseline_S_SLKv2_MSF_v3"
-
+                "ResUNeXt_250607"\
+                "ResUNeXt_DCLA_250607"\
+                "SLK_MSF_DCLA_UNet_250607"\
                 )
 
 slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)

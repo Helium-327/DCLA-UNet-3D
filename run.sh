@@ -1,29 +1,9 @@
 #!/bin/bash
 
 Training_Models=(
-                # "UNet3D"\
-                # "AttUNet3D"
-                # "DCLA_UNet_v2_4"\
-                #  "UNETR"\
-                #  "UNETR_PP"\
-                "SLK_UNet_250607"\
-                "SLK_SE_UNet_250607"\
-                "MSF_UNet_250607"\
-                "SLK_MSF_UNet_250607"\
-                "SLK_MSF_SE_UNet_250607"\
-                "SLK_MSF_SE_DCLA_UNet_250607"\
-                # "BaseLine_S_DCLA_final"\
-                # "DCLA_UNet_finalv2"\
-                # "DCLA_UNet_finalv3"\
-                # "DCLA_UNet_finalv4"\
-                # "BaseLine_S_DCLA_250602"\
-                # "DCLA_UNet_250604"\
-                # "DCLA_UNet_withoutDCLA_250604"\
-                # "ResUNeXt"\
-                # "Base_ResNeXt_250604"\
-                # "Base_ResNeXt_DCLA_250604"\
-                # "Base_MSF_250604"\
-                # "Base_MSF_DCLA_250604"\
+                "ResUNeXt_250607"\
+                "ResUNeXt_DCLA_250607"\
+                "SLK_MSF_DCLA_UNet_250607"\
                 )
 
 

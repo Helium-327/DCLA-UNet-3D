@@ -678,7 +678,7 @@ class EfficientAttentionBlock(nn.Module):
         
     def forward(self, x):
         if self.parallel:
-            out = self.ca(x)*self.sa(x) * x
+            out = self.ca(x)* self.sa(x) * x
         else:
             out = self.ca(x) * x
             out = self.sa(out) * out

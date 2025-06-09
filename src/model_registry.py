@@ -136,7 +136,8 @@ model_register = {
       "Base_MSF_DCLA_250605":                   Base_MSF_DCLA_250605(**BASE_ARGS),
     },
     "DCLA_UNet 250606": {
-    #   "ResUNeXt":                               ResUNeXt(**BASE_ARGS),
+
+      
       "SLK_UNet":                                SLK_UNet(**BASE_ARGS),
       "SLK_MSF_UNet":                            SLK_MSF_UNet(**BASE_ARGS),
       "SLK_MSF_DCLA_UNet":                       SLK_MSF_DCLA_UNet(**BASE_ARGS),
@@ -155,12 +156,23 @@ model_register = {
     },
     
     "DCLA_UNet 250607": {
+      "ResUNeXt_250607":                               ResUNeXt_250607(**BASE_ARGS),
+      "ResUNeXt_DCLA_250607":                          ResUNeXt_DCLA_250607(**BASE_ARGS),
+      
       "SLK_UNet_250607":                               SLK_UNet_250607(**BASE_ARGS),
       "SLK_SE_UNet_250607":                            SLK_SE_UNet_250607(**BASE_ARGS),
+      
       "MSF_UNet_250607":                               MSF_UNet_250607(**BASE_ARGS),
+      
       "SLK_MSF_UNet_250607":                           SLK_MSF_UNet_250607(**BASE_ARGS),
+      "SLK_MSF_DCLA_UNet_250607":                      SLK_MSF_DCLA_UNet_250607(**BASE_ARGS), 
+      "SLK_MSF_SEdown_UNet_250607":                    SLK_MSF_SEdown_UNet_250607(**BASE_ARGS),
+      
       "SLK_MSF_SE_UNet_250607":                        SLK_MSF_SE_UNet_250607(**BASE_ARGS),
       "SLK_MSF_SE_DCLA_UNet_250607":                   SLK_MSF_SE_DCLA_UNet_250607(**BASE_ARGS),
+      
+      "DCLA_UNet_250607":                              DCLA_UNet_250607(**BASE_ARGS),
+      "DCLA_UNet_NoRes_250607":                        DCLA_UNet_NoRes_250607(**BASE_ARGS),
     },
     
     "ConvNeXt": {
