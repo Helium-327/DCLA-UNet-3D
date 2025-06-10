@@ -166,6 +166,8 @@ model_register = {
       
       "SLK_MSF_UNet_250607":                           SLK_MSF_UNet_250607(**BASE_ARGS),
       "SLK_MSF_DCLA_UNet_250607":                      SLK_MSF_DCLA_UNet_250607(**BASE_ARGS), 
+      "SLK_MSF_DCLA_NoRes_UNet_250607":                SLK_MSF_DCLA_NoRes_UNet_250607(**BASE_ARGS),
+      "SLK_MSF_DCLA_k7_NoRes_UNet_250607":             SLK_MSF_DCLA_k7_NoRes_UNet_250607(**BASE_ARGS),
       "SLK_MSF_DCLAv2_NoRes_UNet_250607":              SLK_MSF_DCLAv2_NoRes_UNet_250607(**BASE_ARGS),
       "SLK_MSF_DCLAv3_NoRes_UNet_250607":              SLK_MSF_DCLAv3_NoRes_UNet_250607(**BASE_ARGS),
       "SLK_MSF_SEdown_UNet_250607":                    SLK_MSF_SEdown_UNet_250607(**BASE_ARGS),
@@ -175,6 +177,33 @@ model_register = {
       
       "DCLA_UNet_250607":                              DCLA_UNet_250607(**BASE_ARGS),
       "DCLA_UNet_NoRes_250607":                        DCLA_UNet_NoRes_250607(**BASE_ARGS),
+      "AxFB_UNet_250607":                              AxFB_UNet_250607(**BASE_ARGS),
+      
+    },
+    
+    "DCLA_UNet 250609": {
+    #   "ResUNeXt_250609":                               ResUNeXt_250609(**BASE_ARGS),
+    #   "ResUNeXt_DCLA_250609":                          ResUNeXt_DCLA_250609(**BASE_ARGS),
+      
+    #   "SLK_UNet_250609":                               SLK_UNet_250609(**BASE_ARGS),
+    #   "SLK_SE_UNet_250609":                            SLK_SE_UNet_250609(**BASE_ARGS),
+      
+    #   "MSF_UNet_250609":                               MSF_UNet_250609(**BASE_ARGS),
+      
+    #   "SLK_MSF_UNet_250609":                           SLK_MSF_UNet_250609(**BASE_ARGS),
+    #   "SLK_MSF_DCLA_UNet_250609":                      SLK_MSF_DCLA_UNet_250609(**BASE_ARGS), 
+    #   "SLK_MSF_DCLA_NoRes_UNet_250609":                SLK_MSF_DCLA_NoRes_UNet_250609(**BASE_ARGS),
+    #   "SLK_MSF_DCLAv2_NoRes_UNet_250609":              SLK_MSF_DCLAv2_NoRes_UNet_250609(**BASE_ARGS),
+    #   "SLK_MSF_DCLAv3_NoRes_UNet_250609":              SLK_MSF_DCLAv3_NoRes_UNet_250609(**BASE_ARGS),
+    #   "SLK_MSF_SEdown_UNet_250609":                    SLK_MSF_SEdown_UNet_250609(**BASE_ARGS),
+      
+    #   "SLK_MSF_SE_UNet_250609":                        SLK_MSF_SE_UNet_250609(**BASE_ARGS),
+    #   "SLK_MSF_SE_DCLA_UNet_250609":                   SLK_MSF_SE_DCLA_UNet_250609(**BASE_ARGS),
+      
+    #   "DCLA_UNet_250609":                              DCLA_UNet_250609(**BASE_ARGS),
+    #   "DCLA_UNet_NoRes_250609":                        DCLA_UNet_NoRes_250609(**BASE_ARGS),
+    #   "AxFB_UNet_250609":                              AxFB_UNet_250609(**BASE_ARGS)
+    ""
     },
     
     "ConvNeXt": {

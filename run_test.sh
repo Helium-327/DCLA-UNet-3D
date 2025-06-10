@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "SLK_MSF_DCLAv2_NoRes_UNet_250607"\
+                "SLK_MSF_DCLA_k7_NoRes_UNet_250607"\
                 )
 
 slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)
@@ -25,10 +25,10 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --local \
-                   --train_length 500 \
-                   --val_length 150 \
-                   --test_length 50 \
-                   --epochs 50 \
+                   --train_length 210 \
+                   --val_length 60 \
+                   --test_length 30 \
+                   --epochs 10 \
                    --batch_size 1 \
                    --lr 3e-4 \
                    --wd 2e-5 \
