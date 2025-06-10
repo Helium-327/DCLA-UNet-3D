@@ -1,9 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "ResUNeXt_250607"\
-                "ResUNeXt_DCLA_250607"\
-                "SLK_MSF_DCLA_UNet_250607"\
+                "SLK_MSF_DCLAv2_NoRes_UNet_250607"\
                 )
 
 

@@ -389,6 +389,32 @@ class DCLA_UNet_NoRes_250607(nn.Module):
         
         out = self.outc(d2)  # [B, out_channels, D, H, W]
         return out    
+    
+class DCLA_UNet_DCLAv2_NoRes_250607(DCLA_UNet_NoRes_250607):
+    __remark__ = """
+    [Version]: 250607
+    [Author]: Junyin Xiong
+    [Features]
+    • 集成DCLA跨层注意力机制(Down_kernel=3, 5, 7) + 残差连接
+    • 总参数量: 2.852M
+    • FLOPs: 145.133G
+    [Changes]
+    • 添加了ResNeXt模块
+    """
+    def __init__(self,
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=7, 
+                 f_list=[32, 64, 128, 256],
+                 dropout_rate=0.2,
+                 norm_type="batch",
+                 act_type="gelu",
+                 ):
+        super(DCLA_UNet_DCLAv2_NoRes_250607, self).__init__()
+        
+        self.dcla = DynamicCrossLevelAttentionv2(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+    def forward(self, x):
+        return super().forward(x)
  
 class SLK_UNet_250607(DCLA_UNet_250607):
     __remark__ = """
@@ -595,6 +621,113 @@ class SLK_MSF_DCLA_UNet_250607(DCLA_UNet_250607):
     def forward(self, x):
         return super().forward(x)
     
+
+class SLK_MSF_DCLA_NoRes_UNet_250607(DCLA_UNet_NoRes_250607):
+    __remark__ = """
+    [Version]: 250607
+    [Author]: Junyin Xiong
+    [Features]
+    • 集成DCLA跨层注意力机制(Down_kernel=3, 5, 7) + 残差连接
+    • 总参数量: 2.852M
+    • FLOPs: 145.133G
+    [Changes]
+    • 添加了ResNeXt模块
+    """
+    def __init__(self,
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=7, 
+                 f_list=[32, 64, 128, 256],
+                 dropout_rate=0.2,
+                 norm_type="batch",
+                 act_type="gelu",
+                 ):
+        super(SLK_MSF_DCLA_NoRes_UNet_250607, self).__init__()
+            
+        self.Conv1 = SlimLargeKernelBlockv4(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv2 = SlimLargeKernelBlockv4(f_list[0], f_list[1], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv3 = SlimLargeKernelBlockv4(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv4 = SlimLargeKernelBlockv4(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        
+        self.UpConv4 = MutilScaleFusionBlock(f_list[3]*2, f_list[3]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv3 = MutilScaleFusionBlock(f_list[2]*2, f_list[2]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv2 = MutilScaleFusionBlock(f_list[1]*2, f_list[1]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv1 = MutilScaleFusionBlock(f_list[0]*2, f_list[0], dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+    def forward(self, x):
+        return super().forward(x)
+    
+
+class SLK_MSF_DCLAv2_NoRes_UNet_250607(DCLA_UNet_NoRes_250607):
+    __remark__ = """
+    [Version]: 250607
+    [Author]: Junyin Xiong
+    [Features]
+    • 集成DCLA跨层注意力机制(Down_kernel=3, 5, 7) + 残差连接
+    • 总参数量: 2.852M
+    • FLOPs: 145.133G
+    [Changes]
+    • 添加了ResNeXt模块
+    """
+    def __init__(self,
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=7, 
+                 f_list=[32, 64, 128, 256],
+                 dropout_rate=0.2,
+                 norm_type="batch",
+                 act_type="gelu",
+                 ):
+        super(SLK_MSF_DCLAv2_NoRes_UNet_250607, self).__init__()
+            
+        self.Conv1 = SlimLargeKernelBlockv4(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv2 = SlimLargeKernelBlockv4(f_list[0], f_list[1], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv3 = SlimLargeKernelBlockv4(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv4 = SlimLargeKernelBlockv4(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        
+        self.dcla = DynamicCrossLevelAttentionv2(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.UpConv4 = MutilScaleFusionBlock(f_list[3]*2, f_list[3]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv3 = MutilScaleFusionBlock(f_list[2]*2, f_list[2]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv2 = MutilScaleFusionBlock(f_list[1]*2, f_list[1]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv1 = MutilScaleFusionBlock(f_list[0]*2, f_list[0], dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+    def forward(self, x):
+        return super().forward(x)
+
+
+class SLK_MSF_DCLAv3_NoRes_UNet_250607(DCLA_UNet_NoRes_250607):
+    __remark__ = """
+    [Version]: 250607
+    [Author]: Junyin Xiong
+    [Features]
+    • 集成DCLA跨层注意力机制(Down_kernel=3, 5, 7) + 残差连接
+    • 总参数量: 2.852M
+    • FLOPs: 145.133G
+    [Changes]
+    • 添加了ResNeXt模块
+    """
+    def __init__(self,
+                 in_channels, 
+                 out_channels, 
+                 kernel_size=7, 
+                 f_list=[32, 64, 128, 256],
+                 dropout_rate=0.2,
+                 norm_type="batch",
+                 act_type="gelu",
+                 ):
+        super(SLK_MSF_DCLAv3_NoRes_UNet_250607, self).__init__()
+            
+        self.Conv1 = SlimLargeKernelBlockv4(in_channels, f_list[0], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv2 = SlimLargeKernelBlockv4(f_list[0], f_list[1], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv3 = SlimLargeKernelBlockv4(f_list[1], f_list[2], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        self.Conv4 = SlimLargeKernelBlockv4(f_list[2], f_list[3], kernel_size=kernel_size, norm_type=norm_type, act_type=act_type)
+        
+        self.dcla = DynamicCrossLevelAttentionv3(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[7], fusion_kernel=1)
+        self.UpConv4 = MutilScaleFusionBlock(f_list[3]*2, f_list[3]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv3 = MutilScaleFusionBlock(f_list[2]*2, f_list[2]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv2 = MutilScaleFusionBlock(f_list[1]*2, f_list[1]//2, dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+        self.UpConv1 = MutilScaleFusionBlock(f_list[0]*2, f_list[0], dilations=[1, 2, 3], norm_type=norm_type, act_type=act_type)
+    def forward(self, x):
+        return super().forward(x)
+
 class SLK_MSF_SE_UNet_250607(DCLA_UNet_250607):
     __remark__ = """
     [Version]: 250607
@@ -735,6 +868,7 @@ class SLK_MSF_SE_DCLA_UNet_250607(DCLA_UNet_250607):
         return super().forward(x)
 
 if __name__ == "__main__":
-    test_unet(model_class=SLK_MSF_SE_DCLA_UNet_250607, batch_size=1)   
-    model = SLK_MSF_SE_DCLA_UNet_250607(in_channels=4, out_channels=4)
+    test_unet(model_class=SLK_MSF_DCLAv3_NoRes_UNet_250607, batch_size=1)   
+    model = SLK_MSF_DCLAv3_NoRes_UNet_250607(in_channels=4, out_channels=4)
     print(model.__remark__)
+    

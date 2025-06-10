@@ -1,8 +1,8 @@
 
-from turtle import forward
 import torch
 import torch.nn as nn 
-
+from mamba_ssm import Mamba
+from torch.amp import autocast
 
 class SlimLargeKernelBlock(nn.Module): 
     def __init__(self, 
@@ -663,6 +663,57 @@ class SlimLargeKernelBlockv4(nn.Module):
 #         out += self.residual(x)
 #         return self.act(out)   
 
+class MambaLayer(nn.Module):
+    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, channel_token = False):
+        super().__init__()
+        print(f"MambaLayer: dim: {dim}")
+        self.dim = dim
+        self.norm = nn.LayerNorm(dim)
+        self.mamba = Mamba(
+                d_model=dim, # Model dimension d_model
+                d_state=d_state,  # SSM state expansion factor
+                d_conv=d_conv,    # Local convolution width
+                expand=expand,    # Block expansion factor
+        )
+        self.channel_token = channel_token ## whether to use channel as tokens
+
+    def forward_patch_token(self, x):
+        B, d_model = x.shape[:2]
+        assert d_model == self.dim
+        n_tokens = x.shape[2:].numel()
+        img_dims = x.shape[2:]
+        x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2)
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+        out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
+
+        return out
+
+    def forward_channel_token(self, x):
+        B, n_tokens = x.shape[:2]
+        d_model = x.shape[2:].numel()
+        assert d_model == self.dim, f"d_model: {d_model}, self.dim: {self.dim}"
+        img_dims = x.shape[2:]
+        x_flat = x.flatten(2)
+        assert x_flat.shape[2] == d_model, f"x_flat.shape[2]: {x_flat.shape[2]}, d_model: {d_model}"
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+        out = x_mamba.reshape(B, n_tokens, *img_dims)
+
+        return out
+
+    @autocast(device_type="cuda", enabled=False)
+    def forward(self, x):
+        if x.dtype == torch.float16 or x.dtype == torch.bfloat16:
+            x = x.type(torch.float32)
+        
+        if self.channel_token:
+            out = self.forward_channel_token(x)
+        else:
+            out = self.forward_patch_token(x)
+
+        return out
+
 
 class EfficientAttentionBlock(nn.Module):
     def __init__(self, 
@@ -905,16 +956,17 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         out = attn * x
         return out
     
-class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
+    
+class DynamicCrossLevelAttentionv2(nn.Module): #MSFA
     def __init__(self, 
                  ch_list, 
                  feats_size, 
                  min_size=8, 
-                 squeeze_kernel=3,
+                 mamba_dim=16, 
+                 squeeze_kernel=1,
                  down_kernel=[3,5,7], 
                  fusion_kernel=1,
-                 fusion_mode='add',
-                 groups=4
+                 fusion_mode='add'
                  ):
         """
         Args: 
@@ -935,12 +987,8 @@ class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
         # if isinstance(self.kernel_size, int):
         for ch in self.ch_list:
             self.squeeze_layers.append(
-                #! 改进点2：添加分组注意力
                 nn.Sequential(
-                    nn.Conv3d(ch, ch//groups, kernel_size=squeeze_kernel, padding=squeeze_kernel//2, groups=groups),
-                    nn.GroupNorm(groups, ch//groups),
-                    nn.GELU(),
-                    nn.Conv3d(ch//groups, 1, kernel_size=1),
+                    nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
                     nn.InstanceNorm3d(1, affine=True),
                     nn.GELU()
                     ))
@@ -965,6 +1013,14 @@ class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
             nn.GELU(),
             nn.Conv3d(1, 1, kernel_size=1, padding=0)
         )
+        self.mamba = MambaLayer(
+            dim=len(ch_list),  # 输入通道数
+            d_state=mamba_dim,
+            d_conv=3,
+            expand=2,
+            channel_token=False
+        )
+        
         self.fusion = nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2)
 
     def forward(self, encoder_feats, x):
@@ -991,12 +1047,211 @@ class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
                 raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")
             
             downs.append(down_feat.squeeze(1))
+            
         # 特征融合
-        fused = self.fusion(torch.stack(downs, dim=1))
+        fused = self.mamba(torch.stack(downs, dim=1))
+        fused = self.fusion(fused)
         attn = torch.sigmoid(fused)
-        
         out = attn * x
         return out
+    
+
+class DynamicCrossLevelAttentionv3(nn.Module): #MSFA
+    def __init__(self, 
+                 ch_list, 
+                 feats_size, 
+                 min_size=8, 
+                 mamba_dim=16, 
+                 squeeze_kernel=1,
+                 down_kernel=[3,5,7], 
+                 fusion_kernel=1,
+                 fusion_mode='add'
+                 ):
+        """
+        Args: 
+            ch_list: 输入特征的通道数
+            feats_size: 输入特征的空间尺寸
+            min_size: 最小空间尺寸
+            kernel_size: 卷积核大小, 可以是一个整数或一个元组 (k1, k2, k3, k4)
+        """
+        super().__init__()
+        self.ch_list = ch_list
+        self.feats_size = feats_size
+        self.min_size = min_size
+        self.kernel_size = down_kernel if isinstance(down_kernel, list) else [down_kernel]
+        self.fusion_mode = fusion_mode
+        self.squeeze_layers = nn.ModuleList()
+        self.down_layers = nn.ModuleList()
+        
+        # if isinstance(self.kernel_size, int):
+        for ch in self.ch_list:
+            self.squeeze_layers.append(
+                nn.Sequential(
+                    nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
+                    nn.InstanceNorm3d(1, affine=True),
+                    nn.GELU()
+                    ))
+        for feat_size in feats_size:
+            self.down_layers.append(
+                AdaptiveSpatialCondenser(
+                    in_channels=1, 
+                    out_channels=1, 
+                    kernel_size=self.kernel_size, 
+                    in_size=feat_size, 
+                    min_size=8,
+                    fusion_mode=self.fusion_mode  # 'concat' or 'add'
+                )
+            )
+        self.conv = nn.Sequential(
+            nn.Conv3d(len(self.kernel_size),
+                      1, 
+                      kernel_size=1, 
+                      padding=0
+                      ),
+            nn.InstanceNorm3d(1, affine=True),
+            nn.GELU(),
+            nn.Conv3d(1, 1, kernel_size=1, padding=0)
+        )
+        
+        self.mamba = MambaLayer(
+            dim=len(ch_list),  # 输入通道数
+            d_state=mamba_dim,
+            d_conv=4,
+            expand=2,
+            channel_token=False
+        )
+        
+        self.proj = nn.Conv3d(len(self.ch_list), len(self.ch_list), kernel_size=3, padding=1, groups=len(self.ch_list))
+        
+        self.attn = nn.Sequential(
+            nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2),
+            nn.Sigmoid()
+        )
+        
+    def forward(self, encoder_feats, x):
+        squeezed_feats = []
+        
+        # 压缩通道数
+        for i , squeeze_layer in enumerate(self.squeeze_layers):
+            squeezed_feats.append(squeeze_layer(encoder_feats[i]))
+
+        downs = []
+        
+        # 压缩空间维度
+        for i, feat in enumerate(squeezed_feats):
+            need_down = (feat.size(2) != self.min_size)
+            if need_down:
+                down_feat = self.down_layers[i](feat)
+            else:
+                down_feat = feat
+            if self.fusion_mode == 'concat':
+                down_feat = self.conv(down_feat)
+            elif self.fusion_mode == 'add':
+                down_feat = down_feat
+            else:
+                raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")
+            downs.append(down_feat.squeeze(1))
+    
+        # 特征融合
+        fused = torch.stack(downs, dim=1)
+        fused = self.mamba(fused + self.proj(fused)) 
+        attn = self.attn(fused)        
+        out = attn * x
+        return out
+        
+    
+# class DynamicCrossLevelAttentionv1(nn.Module): #MSFA
+#     def __init__(self, 
+#                  ch_list, 
+#                  feats_size, 
+#                  min_size=8, 
+#                  squeeze_kernel=3,
+#                  down_kernel=[3,5,7], 
+#                  fusion_kernel=1,
+#                  fusion_mode='add',
+#                  groups=4
+#                  ):
+#         """
+#         Args: 
+#             ch_list: 输入特征的通道数
+#             feats_size: 输入特征的空间尺寸
+#             min_size: 最小空间尺寸
+#             kernel_size: 卷积核大小, 可以是一个整数或一个元组 (k1, k2, k3, k4)
+#         """
+#         super().__init__()
+#         self.ch_list = ch_list
+#         self.feats_size = feats_size
+#         self.min_size = min_size
+#         self.kernel_size = down_kernel if isinstance(down_kernel, list) else [down_kernel]
+#         self.fusion_mode = fusion_mode
+#         self.squeeze_layers = nn.ModuleList()
+#         self.down_layers = nn.ModuleList()
+        
+#         # if isinstance(self.kernel_size, int):
+#         for ch in self.ch_list:
+#             self.squeeze_layers.append(
+#                 #! 改进点2：添加分组注意力
+#                 nn.Sequential(
+#                     nn.Conv3d(ch, ch//groups, kernel_size=squeeze_kernel, padding=squeeze_kernel//2, groups=groups),
+#                     nn.GroupNorm(groups, ch//groups),
+#                     nn.GELU(),
+#                     nn.Conv3d(ch//groups, 1, kernel_size=1),
+#                     nn.InstanceNorm3d(1, affine=True),
+#                     nn.GELU()
+#                     ))
+#         for feat_size in feats_size:
+#             self.down_layers.append(
+#                 AdaptiveSpatialCondenser(
+#                     in_channels=1, 
+#                     out_channels=1, 
+#                     kernel_size=self.kernel_size, 
+#                     in_size=feat_size, 
+#                     min_size=8,
+#                     fusion_mode=self.fusion_mode  # 'concat' or 'add'
+#                 )
+#             )
+#         self.conv = nn.Sequential(
+#             nn.Conv3d(len(self.kernel_size),
+#                       1, 
+#                       kernel_size=1, 
+#                       padding=0
+#                       ),
+#             nn.InstanceNorm3d(1, affine=True),
+#             nn.GELU(),
+#             nn.Conv3d(1, 1, kernel_size=1, padding=0)
+#         )
+#         self.fusion = nn.Conv3d(len(self.ch_list), 1, kernel_size=fusion_kernel, padding=fusion_kernel//2)
+
+#     def forward(self, encoder_feats, x):
+#         squeezed_feats = []
+        
+#         # 压缩通道数
+#         for i , squeeze_layer in enumerate(self.squeeze_layers):
+#             squeezed_feats.append(squeeze_layer(encoder_feats[i]))
+
+#         downs = []
+        
+#         # 压缩空间维度
+#         for i, feat in enumerate(squeezed_feats):
+#             need_down = (feat.size(2) != self.min_size)
+#             if need_down:
+#                 down_feat = self.down_layers[i](feat)
+#             else:
+#                 down_feat = feat
+#             if self.fusion_mode == 'concat':
+#                 down_feat = self.conv(down_feat)
+#             elif self.fusion_mode == 'add':
+#                 down_feat = down_feat
+#             else:
+#                 raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")
+            
+#             downs.append(down_feat.squeeze(1))
+#         # 特征融合
+#         fused = self.fusion(torch.stack(downs, dim=1))
+#         attn = torch.sigmoid(fused)
+        
+#         out = attn * x
+#         return out
 
 class DepthwiseAxialConv3d(nn.Module):
     """深度可分离轴向3D卷积（分XYZ三个轴向依次卷积）
