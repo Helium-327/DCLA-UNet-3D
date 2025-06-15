@@ -369,7 +369,7 @@ if __name__ == '__main__':
         'optimizer': None,
         'ckpt_path': None
     }
-    
+
     # # ##! UNet3D
     # model = load_model('UNet3D')
     # unet_common_config.update(
@@ -463,16 +463,16 @@ if __name__ == '__main__':
     
     
     # """ 消融实验"""
-    # # # ##! DCLA_UNet_final
-    model = load_model('DCLA_UNet_final')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】DCLA_UNet_final_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1099_dice0.8907_20250528021008.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0) 
+    # # # # ##! DCLA_UNet_final
+    # model = load_model('DCLA_UNet_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】DCLA_UNet_final_2025-05-27_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1099_dice0.8907_20250528021008.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
     
     # # # ##! DCLA_UNet_withoutDCLA_v2_6
     # model = load_model('DCLA_UNet_withoutDCLA_v2_6')
@@ -509,60 +509,128 @@ if __name__ == '__main__':
     # inference(**unet_common_config, stride_ratio=0) 
     
     
-    # ##! BaseLine_S_SLK_final ✅
-    model = load_model('BaseLine_S_SLK_final')
+    # # ##! BaseLine_S_SLK_final ✅
+    # model = load_model('BaseLine_S_SLK_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.833】BaseLine_S_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1514_dice0.8490_20250530110854.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # # ##! BaseLine_S_DCLA_SLK_final
+    # model = load_model('BaseLine_S_DCLA_SLK_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.875】BaseLine_S_DCLA_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch100_loss0.1120_dice0.8888_20250530160659.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # # ##! BaseLine_S_MSF_final
+    # model = load_model('BaseLine_S_MSF_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.884】BaseLine_S_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch73_loss0.1061_dice0.8946_20250530205635.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # # ##! BaseLine_S_DCLA_MSF_final
+    # model = load_model('BaseLine_S_DCLA_MSF_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.885】BaseLine_S_DCLA_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch92_loss0.1097_dice0.8911_20250531045135.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # # ##! BaseLine_S_SLK_MSF_final
+    # model = load_model('BaseLine_S_SLK_MSF_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.881】BaseLine_S_SLK_MSF_final_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch84_loss0.1114_dice0.8892_20250530052055.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+
+
+    # # # ##! BaseLine_S_SLK_MSF_final
+    # model = load_model('BaseLine_S_SLK_MSF_final')
+    # unet_common_config.update(
+    #     {
+    #         'model':        model,
+    #         'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
+    #         'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.877】SLK_UNet_250607_2025-06-07_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch95_loss0.1099_dice0.8904_20250608025834.pth")
+    #     }
+    # )
+    # inference(**unet_common_config, stride_ratio=0) 
+    
+    # # ##! SLK_UNet_250607
+    model = load_model('SLK_UNet_250607')
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.833】BaseLine_S_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch94_loss0.1514_dice0.8490_20250530110854.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.877】SLK_UNet_250607_2025-06-07_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch95_loss0.1099_dice0.8904_20250608025834.pth")
+        }
+    )
+    inference(**unet_common_config, stride_ratio=0) 
+
+    # # ##! MSF_UNet_250607
+    model = load_model('MSF_UNet_250607')
+    unet_common_config.update(
+        {
+            'model':        model,
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.879】MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch89_loss0.1098_dice0.8905_20250608131536.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
     
-    # # ##! BaseLine_S_DCLA_SLK_final
-    model = load_model('BaseLine_S_DCLA_SLK_final')
+    # # ##! SLK_MSF_UNet_250607
+    model = load_model('SLK_MSF_UNet_250607')
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.875】BaseLine_S_DCLA_SLK_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch100_loss0.1120_dice0.8888_20250530160659.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.882】SLK_MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch96_loss0.1098_dice0.8904_20250608185017.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
     
-    # # ##! BaseLine_S_MSF_final
-    model = load_model('BaseLine_S_MSF_final')
+    # # ##! SLK_MSF_DCLA_NoRes_UNet_250607
+    model = load_model('SLK_MSF_DCLA_NoRes_UNet_250607')
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.884】BaseLine_S_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch73_loss0.1061_dice0.8946_20250530205635.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】SLK_MSF_DCLA_NoRes_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch88_loss0.1094_dice0.8909_20250610010028.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! BaseLine_S_DCLA_MSF_final
-    model = load_model('BaseLine_S_DCLA_MSF_final')
+
+    # # ##! SLK_MSF_DCLA_UNet_250607
+    model = load_model('SLK_MSF_DCLA_UNet_250607')
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.885】BaseLine_S_DCLA_MSF_final_2025-05-30_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch92_loss0.1097_dice0.8911_20250531045135.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.879】SLK_MSF_DCLA_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch93_loss0.1119_dice0.8884_20250609182244.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
-    
-    # # ##! BaseLine_S_SLK_MSF_final
-    model = load_model('BaseLine_S_SLK_MSF_final')
-    unet_common_config.update(
-        {
-            'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0001, betas=(0.9, 0.99), weight_decay=0.00001),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.881】BaseLine_S_SLK_MSF_final_2025-05-29_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch84_loss0.1114_dice0.8892_20250530052055.pth")
-        }
-    )
-    inference(**unet_common_config, stride_ratio=0) 
+
 
     
     

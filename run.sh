@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "SLK_MSF_DCLAv2_NoRes_UNet_250607"\
+                "DCLA_UNet_NoRes_250615"\
                 )
 
 
@@ -44,6 +44,7 @@ done
 shopt -u nullglob
 
 shutdown -h now
+
 # 关机(linux)
 # echo "✅ 训练完成，正在关机"
 

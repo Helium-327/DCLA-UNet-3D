@@ -206,6 +206,10 @@ model_register = {
     ""
     },
     
+    "DCLA_UNet 250615": {
+      "DCLA_UNet_NoRes_250615":                         DCLA_UNet_NoRes_250615(**BASE_ARGS),
+    },
+    
     "ConvNeXt": {
         # "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),
         

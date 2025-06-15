@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "SLK_MSF_DCLA_k7_NoRes_UNet_250607"\
+                "DCLA_UNet_NoRes_250615"\
                 )
 
 slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)
