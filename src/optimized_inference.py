@@ -350,7 +350,7 @@ def trans_from_wins_to_linux(path):
 
 if __name__ == '__main__':
     
-    csv_file = '/root/workspace/BraTS_Solution/data/test.csv'
+    csv_file = '/root/workspace/DCLA-UNet/data/test.csv'
     
     # out_dir = '/mnt/d/results/2_消融实验结果/【final】DCLA_UNet/outputs'
     # os.makedirs(out_dir, exist_ok=True)
