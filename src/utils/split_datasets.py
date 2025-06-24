@@ -88,7 +88,7 @@ class DatasetSplitter:
     def _save_dataset(data: List[Tuple[str, str]], path:str):
         with open(path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['patient_idx', 'patient_dir'])
+            writer.writerow(['patient_id', 'patient_dir'])
             writer.writerows(data)
             
     @staticmethod
@@ -101,7 +101,7 @@ class DatasetSplitter:
                 with open(csv_path, 'r', encoding='utf-8') as f:
                     reader = csv.DictReader(f)
                     for row in reader:
-                        patients.add(row['patient_idx'])
+                        patients.add(row['patient_id'])
             except FileNotFoundError:
                 raise FileNotFoundError(f"CSV文件不存在: {csv_path}")
             return patients

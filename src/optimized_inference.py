@@ -581,8 +581,8 @@ if __name__ == '__main__':
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.877】SLK_UNet_250607_2025-06-07_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch95_loss0.1099_dice0.8904_20250608025834.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00002),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\消融实验【lr0.0003_mlr1e-06_Tmax100_100_100】\【0.877】SLK_UNet_250607_2025-06-07_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\SLK_UNet_250607_final_model.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
@@ -592,8 +592,8 @@ if __name__ == '__main__':
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.879】MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch89_loss0.1098_dice0.8905_20250608131536.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00002),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\消融实验【lr0.0003_mlr1e-06_Tmax100_100_100】\【0.879】MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch89_loss0.1098_dice0.8905_20250608131536.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
@@ -603,8 +603,8 @@ if __name__ == '__main__':
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.882】SLK_MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch96_loss0.1098_dice0.8904_20250608185017.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00002),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\消融实验【lr0.0003_mlr1e-06_Tmax100_100_100】\【0.882】SLK_MSF_UNet_250607_2025-06-08_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch96_loss0.1098_dice0.8904_20250608185017.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
@@ -614,8 +614,8 @@ if __name__ == '__main__':
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.88】SLK_MSF_DCLA_NoRes_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch88_loss0.1094_dice0.8909_20250610010028.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00002),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\其它\【0.88】SLK_MSF_DCLA_NoRes_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\SLK_MSF_DCLA_NoRes_UNet_250607_final_model.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 
@@ -625,8 +625,8 @@ if __name__ == '__main__':
     unet_common_config.update(
         {
             'model':        model,
-            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00003),
-            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\【0.879】SLK_MSF_DCLA_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\best_epoch93_loss0.1119_dice0.8884_20250609182244.pth")
+            'optimizer':    AdamW(model.parameters(), lr=0.0003, betas=(0.9, 0.99), weight_decay=0.00002),
+            'ckpt_path':    trans_from_wins_to_linux(r"D:\results\DCLA_Unet_final\其它\【0.879】SLK_MSF_DCLA_UNet_250607_2025-06-09_lr0.0003_mlr1e-06_Tmax100_100_100\checkpoints\SLK_MSF_DCLA_UNet_250607_final_model.pth")
         }
     )
     inference(**unet_common_config, stride_ratio=0) 

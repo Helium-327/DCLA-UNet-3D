@@ -936,7 +936,7 @@ class SLK_MSF_SE_DCLA_UNet_250607(DCLA_UNet_250607):
         return super().forward(x)
 
 if __name__ == "__main__":
-    test_unet(model_class=SLK_MSF_DCLA_k7_NoRes_UNet_250607, batch_size=1)   
-    model = SLK_MSF_DCLA_k7_NoRes_UNet_250607(in_channels=4, out_channels=4)
+    test_unet(model_class=SLK_UNet_250607, batch_size=1)   
+    model = SLK_UNet_250607(in_channels=4, out_channels=4)
     print(model.__remark__)
     

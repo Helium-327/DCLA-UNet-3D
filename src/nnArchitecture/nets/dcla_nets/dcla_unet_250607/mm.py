@@ -489,13 +489,13 @@ class ResDWAConvBlock(nn.Module):
                 ),
                 get_norm(norm_type, out_channels),
                 get_act(act_type),
-                # DepthwiseAxialConv3d(
-                #     out_channels,
-                #     out_channels,  # 每个分支的输出通道数为总输出通道数的一半
-                #     kernel_size=kernel_size
-                # ),
-                # get_norm(norm_type, out_channels),
-                # get_act(act_type)
+                DepthwiseAxialConv3d(
+                    out_channels,
+                    out_channels,  # 每个分支的输出通道数为总输出通道数的一半
+                    kernel_size=kernel_size
+                ),
+                get_norm(norm_type, out_channels),
+                get_act(act_type)
             )
         
         self.residual = nn.Conv3d(in_channels, out_channels, kernel_size=1) if in_channels != out_channels else nn.Identity()

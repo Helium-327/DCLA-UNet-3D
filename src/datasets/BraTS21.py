@@ -62,7 +62,7 @@ class BraTS21_3D(Dataset):
             df = df.iloc[:self.length]  # Load a subset for local training
 
         patients_dirs = df['patient_dir'].tolist()
-        patients_ids = df['patient_idx'].tolist()
+        patients_ids = df['patient_id'].tolist()
         
         return patients_dirs, patients_ids
     
