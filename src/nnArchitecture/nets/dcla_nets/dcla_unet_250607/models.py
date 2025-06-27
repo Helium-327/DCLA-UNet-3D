@@ -341,8 +341,7 @@ class DCLA_UNet_NoRes_250607(nn.Module):
         
     def _make_encoder_layer(self, in_channels, out_channels, kernel_size, se_ratio=16):
         return nn.Sequential(
-            SlimLargeKernelBlockv4(in_channels, out_channels, kernel_size=kernel_size),
-            SqueezeExcitation(out_channels, reduction_ratio=se_ratio)
+            SlimLargeKernelBlockv4(in_channels, out_channels, kernel_size=kernel_size)
         )
         
     def _make_decoder_layer(self, 

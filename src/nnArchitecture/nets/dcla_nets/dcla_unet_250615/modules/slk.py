@@ -400,9 +400,7 @@ class SlimLargeKernelBlockv5(nn.Module):
         
     def forward(self, x):
         out = self._conv(x)
-        # map = self.avg(out)
         out = self.resblock(out)
-        # out = map + out
         out = self.conv_(out)
         return out  
     

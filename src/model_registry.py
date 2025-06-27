@@ -51,33 +51,44 @@ model_register = {
     },
     
     "DCLA_UNet 250607": {
-      "ResUNeXt_250607":                               ResUNeXt_250607(**BASE_ARGS),
-      "ResUNeXt_DCLA_250607":                          ResUNeXt_DCLA_250607(**BASE_ARGS),
-      
-      "SLK_UNet_250607":                               SLK_UNet_250607(**BASE_ARGS),
-      "SLK_SE_UNet_250607":                            SLK_SE_UNet_250607(**BASE_ARGS),
-      
-      "MSF_UNet_250607":                               MSF_UNet_250607(**BASE_ARGS),
-      
-      "SLK_MSF_UNet_250607":                           SLK_MSF_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_DCLA_UNet_250607":                      SLK_MSF_DCLA_UNet_250607(**BASE_ARGS), 
-      "SLK_MSF_DCLA_NoRes_UNet_250607":                SLK_MSF_DCLA_NoRes_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_DCLA_k7_NoRes_UNet_250607":             SLK_MSF_DCLA_k7_NoRes_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_DCLAv2_NoRes_UNet_250607":              SLK_MSF_DCLAv2_NoRes_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_DCLAv3_NoRes_UNet_250607":              SLK_MSF_DCLAv3_NoRes_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_SEdown_UNet_250607":                    SLK_MSF_SEdown_UNet_250607(**BASE_ARGS),
-      
-      "SLK_MSF_SE_UNet_250607":                        SLK_MSF_SE_UNet_250607(**BASE_ARGS),
-      "SLK_MSF_SE_DCLA_UNet_250607":                   SLK_MSF_SE_DCLA_UNet_250607(**BASE_ARGS),
-      
-      "DCLA_UNet_250607":                              DCLA_UNet_250607(**BASE_ARGS),
-      "DCLA_UNet_NoRes_250607":                        DCLA_UNet_NoRes_250607(**BASE_ARGS),
-      "AxFB_UNet_250607":                              AxFB_UNet_250607(**BASE_ARGS),
+        "ResUNeXt_250607":                               ResUNeXt_250607(**BASE_ARGS),
+        "ResUNeXt_DCLA_250607":                          ResUNeXt_DCLA_250607(**BASE_ARGS),
+        
+        "SLK_UNet_250607":                               SLK_UNet_250607(**BASE_ARGS),
+        "SLK_SE_UNet_250607":                            SLK_SE_UNet_250607(**BASE_ARGS),
+        
+        "MSF_UNet_250607":                               MSF_UNet_250607(**BASE_ARGS),
+        
+        "SLK_MSF_UNet_250607":                           SLK_MSF_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_DCLA_UNet_250607":                      SLK_MSF_DCLA_UNet_250607(**BASE_ARGS), 
+        "SLK_MSF_DCLA_NoRes_UNet_250607":                SLK_MSF_DCLA_NoRes_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_DCLA_k7_NoRes_UNet_250607":             SLK_MSF_DCLA_k7_NoRes_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_DCLAv2_NoRes_UNet_250607":              SLK_MSF_DCLAv2_NoRes_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_DCLAv3_NoRes_UNet_250607":              SLK_MSF_DCLAv3_NoRes_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_SEdown_UNet_250607":                    SLK_MSF_SEdown_UNet_250607(**BASE_ARGS),
+        
+        "SLK_MSF_SE_UNet_250607":                        SLK_MSF_SE_UNet_250607(**BASE_ARGS),
+        "SLK_MSF_SE_DCLA_UNet_250607":                   SLK_MSF_SE_DCLA_UNet_250607(**BASE_ARGS),
+        
+        "DCLA_UNet_250607":                              DCLA_UNet_250607(**BASE_ARGS),
+        "DCLA_UNet_NoRes_250607":                        DCLA_UNet_NoRes_250607(**BASE_ARGS),
+        "AxFB_UNet_250607":                              AxFB_UNet_250607(**BASE_ARGS),
       
     },
     
     "DCLA_UNet 250615": {
-      "DCLA_UNet_NoRes_250615":                         DCLA_UNet_NoRes_250615(**BASE_ARGS),
+        "DCLA_UNet_NoRes_250615":                         DCLA_UNet_NoRes_250615(**BASE_ARGS),
+    },
+    
+    "DCLA_UNet 250627": {
+        "SLK_UNet_250627":                               SLK_UNet_250627(**BASE_ARGS),
+        
+        "MSF_UNet_250627":                               MSF_UNet_250627(**BASE_ARGS),
+        
+        "SLK_MSF_UNet_250627":                           SLK_MSF_UNet_250627(**BASE_ARGS),
+        
+        "DCLA_UNet_NoRes_250627":                        DCLA_UNet_NoRes_250627(**BASE_ARGS)
+      
     },
     
     "ConvNeXt": {
