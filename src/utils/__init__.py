@@ -19,10 +19,6 @@ from .ckpt_tools import (
     save_checkpoint
 )
 
-from .split_datasets import (
-    DatasetSplitter
-)
-
 from .shell_tools import (
     run_shell_command,
     start_tensorboard

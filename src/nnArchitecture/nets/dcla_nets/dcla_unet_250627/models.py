@@ -214,7 +214,7 @@ class DCLA_UNet_NoRes_250627(nn.Module):
         self.Conv3 = self._make_encoder_layer(f_list[1], f_list[2], kernel_size=kernel_size, se_ratio=se_ratio)
         self.Conv4 = self._make_encoder_layer(f_list[2], f_list[3], kernel_size=kernel_size, se_ratio=se_ratio)
 
-        self.dcla = DynamicCrossLevelAttentionv2(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3,5], fusion_kernel=5)
+        self.dcla = DynamicCrossLevelAttentionv2(ch_list=f_list, feats_size=[128, 64, 32, 16], min_size=8, squeeze_kernel=1, down_kernel=[3,5], fusion_kernel=3)
         self.Up4 = UpSample(f_list[3], f_list[3], trilinear)
         self.Up3 = UpSample(f_list[2], f_list[2], trilinear)
         self.Up2 = UpSample(f_list[1], f_list[1], trilinear)

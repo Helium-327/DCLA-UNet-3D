@@ -90,7 +90,16 @@ model_register = {
         "DCLA_UNet_NoRes_250627":                        DCLA_UNet_NoRes_250627(**BASE_ARGS)
       
     },
-    
+    "DCLA_UNet 250705": {
+        "SLK_UNet_250705":                               SLK_UNet_250705(**BASE_ARGS),
+        
+        "MSF_UNet_250705":                               MSF_UNet_250705(**BASE_ARGS),
+        
+        "SLK_MSF_UNet_250705":                           SLK_MSF_UNet_250705(**BASE_ARGS),
+        
+        "DCLA_UNet_NoRes_250705":                        DCLA_UNet_NoRes_250705(**BASE_ARGS)
+      
+    },
     "ConvNeXt": {
         # "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),
         

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "DCLA_UNet_NoRes_250615"\
+                "DCLA_UNet_NoRes_250705"\
                 )
 
 slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)
@@ -37,7 +37,9 @@ for model_name in "${Training_Models[@]}"; do
                    --early_stop_patience 5 \
                    --num_workers 8 \
                    --interval 1 \
-                   --slb_project $slb_project
+                   --slb_project $slb_project \
+                   --datasets "BraTS2019" \
+                   --data_root "/root/workspace/DCLA-UNet/data/BraTS2019/raw" 
 done
 
 # 关机(linux)

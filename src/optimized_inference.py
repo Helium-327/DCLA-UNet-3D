@@ -21,7 +21,7 @@ from tabulate import tabulate
 from concurrent.futures import ThreadPoolExecutor
 from typing import Tuple, Dict, Any, Optional
 
-from datasets.BraTS21 import BraTS21_3D
+from datasets.BraTS2021 import BraTS21_3D
 from datasets.transforms import CenterCrop3D, Compose, FrontGroundNormalize, RandomCrop3D, ToTensor
 from metrics import *
 from utils.ckpt_tools import load_checkpoint
@@ -35,21 +35,19 @@ AdamW = torch.optim.AdamW
 GradScaler = torch.amp.GradScaler
 autocast = torch.amp.autocast('cuda')
 
-
-
 def load_data(test_csv, local_train=False, test_length=10, batch_size=1, num_workers=4):
     """加载数据集"""
     TransMethods_test = Compose([
         RandomCrop3D(size=(155, 240, 240)),
         FrontGroundNormalize(),
-        ToTensor(),
+        ToTensor()
     ])
 
     test_dataset = BraTS21_3D(
         data_file=test_csv,
         transform=TransMethods_test,
         local_train=local_train,
-        length=test_length,
+        length=test_length
     )
     
     test_loader = DataLoader(
@@ -63,7 +61,6 @@ def load_data(test_csv, local_train=False, test_length=10, batch_size=1, num_wor
     
     print(f"已加载测试数据: {len(test_loader)}")
     return test_loader
-
 
 def inference(
     test_df: pd.DataFrame,

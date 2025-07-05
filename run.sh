@@ -1,7 +1,14 @@
 #!/bin/bash
 
 Training_Models=(
-                "DCLA_UNet_NoRes_250615"\
+                # "UNet3D"\
+                # "AttUNet3D"\
+                # "UNETR"\
+                # "UNETR_PP"\
+                # "MogaNet"\
+                # "Mamba3D"\
+                # "SegFormer3D"
+                "DCLA_UNet_NoRes_250705"\
                 )
 
 
@@ -28,16 +35,19 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --slb \
-                   --lr 3e-4 \
-                   --wd 2e-5 \
-                   --cosine_eta_min 1e-6 \
+                   --lr 1e-4 \
+                   --wd 1e-5 \
+                   --cosine_eta_min 1e-6  \
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
                    --batch_size 1 \
                    --num_workers 8 \
                    --interval 1 \
-                   --slb_project "$slb_project"                    
+                   --slb_project "$slb_project"\
+                   --datasets "BraTS2019" \
+                   --data_root "/root/workspace/DCLA-UNet/data/BraTS2019/raw" 
+
 done
 
 # 禁用nullglob选项（恢复默认设置）

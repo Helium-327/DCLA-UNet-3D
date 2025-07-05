@@ -21,9 +21,9 @@ from metrics import EvaluationMetrics
 from torch.amp import GradScaler
 from train_init import load_model, load_loss, load_optimizer, load_scheduler
 from utils import *
-from datasets import *
 from lossFunc import *
 from metrics import *
+from datasets.BraTS2021 import DatasetSplitter
 
 
 # 环境设置
@@ -105,6 +105,20 @@ def log_params(params, project_name, logs_path, logger, verbose=False):
     
 
 def load_data(args):
+    from datasets import (
+        Compose,
+        RandomFlip3D,
+        RandomCrop3D,
+        CenterCrop3D,
+        FrontGroundNormalize,
+        RandomNoise3D,
+        ToTensor
+    )
+    if args.datasets == 'BraTS2021':
+        from datasets.BraTS2021 import BraTS21_3D as BraTS_Dataset
+    elif args.datasets == 'BraTS2019':
+        from datasets.BraTS2019 import BraTS19_3D as BraTS_Dataset
+        
     """加载数据集"""
     TransMethods_train = Compose([
         RandomFlip3D(),
@@ -126,26 +140,27 @@ def load_data(args):
         ToTensor(),
     ])
 
-    train_dataset = BraTS21_3D(
+    train_dataset = BraTS_Dataset(
         data_file=args.train_csv_path,
         transform=TransMethods_train,
         local_train=args.local,
         length=args.train_length,
     )
     
-    val_dataset = BraTS21_3D(
+    val_dataset = BraTS_Dataset(
         data_file=args.val_csv_path,
         transform=TransMethods_val,
         local_train=args.local,
         length=args.val_length,
     )
 
-    test_dataset = BraTS21_3D(
+    test_dataset = BraTS_Dataset(
         data_file=args.test_csv_path,
         transform=TransMethods_test,
         local_train=args.local,
         length=args.test_length,
     )
+    
     setattr(args, 'train_length', len(train_dataset))
     logger.warning(f"训练集大小变成：{len(train_dataset)}")
     setattr(args, 'val_length', len(val_dataset))
@@ -249,7 +264,7 @@ def main(args):
         logger.warning(f"Refix resume tb data step {resume_tb_path} up to step {start_epoch}")
 
     # 分割数据集/判断是否重叠
-    if args.data_split:
+    if args.data_split and args.datasets == 'BraTS2021':
         dataset_splitter = DatasetSplitter(args.data_root)
         dataset_splitter.collect_files()
         dataset_splitter.split(random_seed=RANDOM_SEED)
@@ -310,7 +325,7 @@ if __name__ == '__main__':
     #*** 固定参数 ***#
     initial_parser.add_argument('--data_root', 
                                 type=str, 
-                                default=os.path.join(ROOT, 'data', 'brats21', 'BraTS2021_Training_Data'), 
+                                default=os.path.join(ROOT, "data/BraTS2019/raw"), 
                                 help='Path to the DATASET ROOT'
                                 )
     initial_parser.add_argument('--outputs_dir', 
@@ -341,7 +356,7 @@ if __name__ == '__main__':
                                 )
     initial_parser.add_argument('--model_name', 
                                 type=str, 
-                                default="ResUNet3D",
+                                default="UNet3D",
                                 help='Name of Model'
                                 )
     initial_parser.add_argument('--slb_project', 
@@ -372,7 +387,7 @@ if __name__ == '__main__':
                                 )
     initial_parser.add_argument('--batch_size', 
                                 type=int, 
-                                default=2,
+                                default=1,
                                 help='Num of batch size'
                                 )
     initial_parser.add_argument('--num_workers', 
@@ -424,6 +439,11 @@ if __name__ == '__main__':
                                 type=str, 
                                 default="Training",
                                 help='commit'
+                                )
+    initial_parser.add_argument('--datasets', 
+                                type=str, 
+                                default="BraTS2019",
+                                help='datasets name, BraTS2019 or BraTS2021'
                                 )
     
     #*** 测试参数 ***#
