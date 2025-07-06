@@ -1,14 +1,14 @@
 #!/bin/bash
 
 Training_Models=(
-                # "UNet3D"\
-                # "AttUNet3D"\
+                "UNet3D"\
+                "AttUNet3D"\
                 # "UNETR"\
                 # "UNETR_PP"\
-                # "MogaNet"\
-                # "Mamba3D"\
-                # "SegFormer3D"
-                "DCLA_UNet_NoRes_250705"\
+                "MogaNet"\
+                "Mamba3d"\
+                "SegFormer3D"
+                # "DCLA_UNet_NoRes_250627"\
                 )
 
 
@@ -35,13 +35,13 @@ for model_name in "${Training_Models[@]}"; do
     # 执行命令
     python src/main.py --model_name "$model_name" \
                    --slb \
-                   --lr 1e-4 \
+                   --lr 2e-4 \
                    --wd 1e-5 \
-                   --cosine_eta_min 1e-6  \
+                   --cosine_eta_min 1e-6 \
                    --epochs 100 \
                    --cosine_T_max 100 \
                    --early_stop_patience 100 \
-                   --batch_size 1 \
+                   --batch_size 2 \
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project "$slb_project"\

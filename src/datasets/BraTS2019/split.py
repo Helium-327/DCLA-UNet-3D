@@ -7,7 +7,7 @@ def search_instances(data_root, pattern="BraTS19*", csv_saved_dir=None, filename
     """
     Search for instances in the dataset directory that match the given pattern.
     """
-    pattern = str(data_root / "**" / pattern)
+    pattern = str(data_root / pattern)
     
     
     csv_saved_path = Path(csv_saved_dir) / filename if filename else Path(csv_saved_dir) / "all_instances.csv"
@@ -59,8 +59,8 @@ def split_datasets(df, ratios=(0.7,0.2,0.1), csv_saved_dir=None):
 
 
 if __name__ == "__main__":
-    data_root = Path("/root/workspace/DCLA-UNet/data/BraTS2019/raw")
-    csv_saved_dir = Path("/root/workspace/DCLA-UNet/data/BraTS2019/raw")
+    data_root = Path("/root/workspace/DCLA-UNet/data/BraTS2019/raw/LGG")
+    csv_saved_dir = Path("/root/workspace/DCLA-UNet/data/BraTS2019/raw/LGG")
     
     # Search for instances
     df_instances = search_instances(data_root, pattern="BraTS19*", csv_saved_dir=csv_saved_dir, filename="train.csv")

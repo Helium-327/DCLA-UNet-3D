@@ -1,6 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
+                "UNet3D"\
                 "DCLA_UNet_NoRes_250705"\
                 )
 
