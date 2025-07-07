@@ -116,6 +116,8 @@ def load_data(args):
     )
     if args.datasets == 'BraTS2021':
         from datasets.BraTS2021 import BraTS21_3D as BraTS_Dataset
+    elif args.datasets == 'BraTS2020':
+        from datasets.BraTS2020 import BraTS20_3D as BraTS_Dataset
     elif args.datasets == 'BraTS2019':
         from datasets.BraTS2019 import BraTS19_3D as BraTS_Dataset
         

@@ -1,0 +1,1 @@
+from .brats2020_3d import BraTS20_3D

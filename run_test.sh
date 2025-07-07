@@ -39,8 +39,8 @@ for model_name in "${Training_Models[@]}"; do
                    --num_workers 8 \
                    --interval 1 \
                    --slb_project $slb_project \
-                   --datasets "BraTS2019" \
-                   --data_root "/root/workspace/DCLA-UNet/data/BraTS2019/raw" 
+                   --datasets "BraTS2020" \
+                   --data_root "/root/workspace/DCLA-UNet/data/BraTS2020/raw" 
 done
 
 # 关机(linux)
