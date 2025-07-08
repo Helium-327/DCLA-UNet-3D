@@ -1,13 +1,14 @@
 #!/bin/bash
 
 Training_Models=(
-                "UNet3D"\
-                "AttUNet3D"\
+                # TODO: 
+                # "UNet3D"\
+                # "AttUNet3D"\
                 # "UNETR"\
                 # "UNETR_PP"\
                 "MogaNet"\
-                "Mamba3d"\
-                "SegFormer3D"
+                # "Mamba3d"\
+                # "SegFormer3D"
                 # "DCLA_UNet_NoRes_250627"\
                 )
 

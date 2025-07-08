@@ -100,6 +100,21 @@ model_register = {
         "DCLA_UNet_NoRes_250705":                        DCLA_UNet_NoRes_250705(**BASE_ARGS)
       
     },
+    
+    "DCLA_UNet 250708": {
+        "SLK_UNet_250708":                               SLK_UNet_250708(**BASE_ARGS),
+        
+        "MSF_UNet_250708":                               MSF_UNet_250708(**BASE_ARGS),
+        
+        "SLK_MSF_UNet_250708":                           SLK_MSF_UNet_250708(**BASE_ARGS),
+        
+        "DCLA_UNet_NoRes_250708":                        DCLA_UNet_NoRes_250708(**BASE_ARGS)
+      
+    },
+    
+    "UltralightDCLAUNet": {
+        "UltralightDCLAUNet":                               UltralightDCLAUNet(**BASE_ARGS),
+    },
     "ConvNeXt": {
         # "ResUNeXt_Attn":                        ResUNeXt_Attn(**BASE_ARGS),
         

@@ -9,3 +9,5 @@ from .slim_sep_unets import *
 from .mega_res_unets import *
 
 from .res_unets import *
+
+from .ultralightunet import UltralightDCLAUNet
