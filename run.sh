@@ -9,7 +9,7 @@ Training_Models=(
                 "MogaNet"\
                 # "Mamba3d"\
                 # "SegFormer3D"
-                # "DCLA_UNet_NoRes_250627"\
+                # "DCLA_UNet_final"\
                 )
 
 

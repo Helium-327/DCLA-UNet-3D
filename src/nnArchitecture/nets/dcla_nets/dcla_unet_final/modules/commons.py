@@ -1,10 +1,16 @@
-import math
+
 import torch
-import torch.nn as nn
-from torch.nn import functional as F
+import torch.nn as nn 
 
+class Swish(nn.Module):
+    def __init__(self):
+        super(Swish, self).__init__()
+        self.sigmoid = nn.Sigmoid()
 
+    def forward(self, x):
+        return x * self.sigmoid(x)
     
+
 def get_norm(name: str, num_channels: int, **kwargs):
     """
     获取指定类型的归一化层
@@ -55,11 +61,3 @@ def get_act(name: str, **kwargs):
         return nn.Sigmoid()
     else:
         raise ValueError(f"Unsupported activation: {name}")
-    
-class Swish(nn.Module):
-    def __init__(self):
-        super(Swish, self).__init__()
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, x):
-        return x * self.sigmoid(x)

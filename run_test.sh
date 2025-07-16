@@ -1,8 +1,7 @@
 #!/bin/bash
 
 Training_Models=(
-                "UNet3D"\
-                "DCLA_UNet_NoRes_250705"\
+                "DCLA_UNet_final"\
                 )
 
 slb_project="test_$(date +%y%m%d)"  #TODO: 填写训练的项目名称 (必填)

@@ -1,10 +1,10 @@
-import math
+
+
 import torch
-import torch.nn as nn
-from torch.nn import functional as F
+import torch.nn as nn 
 
-from .commons import Swish
 
+import math
 class SwishECA(nn.Module):
     def __init__(self, channels, gamma=2, b=1):
         super(SwishECA, self).__init__()
@@ -29,10 +29,49 @@ class SwishECA(nn.Module):
         b, c, _, _, _ = x.shape
         attn = self.ca((self.avg_pool(x) + self.max_pool(x)).view(b, 1, -1)).view(b, -1, 1, 1, 1)
         return attn * x
+
+class SwishSqueezeExcitation(nn.Module):
+    """标准SE模块 (arXiv:1709.01507)"""
+    def __init__(self, channels, reduction_ratio=16):
+        super().__init__()
+        reduced_channels = max(1, channels // reduction_ratio)
+        
+        self.se = nn.Sequential(
+            nn.AdaptiveAvgPool3d(1),
+            nn.Conv3d(channels, reduced_channels, kernel_size=1),
+            Swish(),  # 使用现有Swish激活
+            nn.Conv3d(reduced_channels, channels, kernel_size=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return self.se(x) * x
     
-class LightweightSpatialAttention3D(nn.Module):
+    
+class EfficientAttentionBlock(nn.Module):
+    def __init__(self, 
+                 channels,
+                 spatial_kernal=7,
+                 ratio=16,
+                 parallel=False
+                 ):
+        super().__init__()
+        self.parallel = parallel
+        ratio = min(channels, ratio)
+        self.ca = ChannelsAttn3D(channels, ratio=ratio)
+        self.sa = SpatialAttn3D(kernel_size=spatial_kernal)
+        
+    def forward(self, x):
+        if self.parallel:
+            out = self.ca(x) * x + self.sa(x) * x
+        else:
+            out = self.ca(x) * x
+            out = self.sa(out) * out
+        return out
+            
+class SpatialAttn3D(nn.Module):
     def __init__(self, kernel_size=3):
-        super(LightweightSpatialAttention3D, self).__init__()
+        super(SpatialAttn3D, self).__init__()
         self.conv1 = nn.Conv3d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
         self.bn = nn.BatchNorm3d(1)
         self.sigmoid = nn.Sigmoid()
@@ -45,9 +84,49 @@ class LightweightSpatialAttention3D(nn.Module):
         x = self.bn(self.conv1(x))
         return self.sigmoid(x)
 
-class LightweightChannelAttention3D(nn.Module):
+
+class SqueezeExcitation(nn.Module):
+    """标准SE模块 (arXiv:1709.01507)"""
+    def __init__(self, channels, reduction_ratio=16):
+        super().__init__()
+        reduced_channels = max(1, channels // reduction_ratio)
+        
+        self.se = nn.Sequential(
+            nn.AdaptiveAvgPool3d(1),
+            nn.Conv3d(channels, reduced_channels, kernel_size=1),
+            nn.ReLU(),  # 使用现有Swish激活
+            nn.Conv3d(reduced_channels, channels, kernel_size=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return x * self.se(x)
+    
+class EfficientChannelAttention(nn.Module):
+    """标准ECA模块 (arXiv:1910.03151)"""
+    def __init__(self, channels, gamma=2, b=1):
+        super().__init__()
+        self.avg_pool = nn.AdaptiveAvgPool3d(1)
+        
+        # 动态卷积核计算（保持与原论文一致）
+        kernel_size = int(abs((math.log2(channels) + b) / gamma))
+        kernel_size = kernel_size if kernel_size % 2 else kernel_size + 1
+        
+        self.conv = nn.Conv1d(1, 1, 
+                            kernel_size=kernel_size,
+                            padding=kernel_size//2, 
+                            bias=False)
+    def forward(self, x):
+        y = self.avg_pool(x).flatten(1)  # [B, C, 1, 1, 1]
+        # y = y.squeeze(-1).squeeze(-1).squeeze(-1)  # [B, C]
+        y = y.unsqueeze(1)  # [B, 1, C]
+        y = self.conv(y)  # [B, 1, C]
+        y = y.squeeze(1).unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)  # 恢复形状
+        return x * torch.sigmoid(y)    
+
+class ChannelsAttn3D(nn.Module):
     def __init__(self, in_planes, ratio=2):
-        super(LightweightChannelAttention3D, self).__init__()
+        super(ChannelsAttn3D, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool3d(1)
         self.max_pool = nn.AdaptiveMaxPool3d(1)
 
@@ -61,6 +140,15 @@ class LightweightChannelAttention3D(nn.Module):
         out = self.fc2(self.act(self.fc1(self.avg_pool(x) + self.max_pool(x))))
         return self.sigmoid(out)
     
+class Swish(nn.Module):
+    def __init__(self):
+        super(Swish, self).__init__()
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        return x * self.sigmoid(x)            
+       
+       
 class AdaptiveSpatialCondenser(nn.Module):
     def __init__(self, 
                  in_channels=1, 
@@ -111,15 +199,15 @@ class AdaptiveSpatialCondenser(nn.Module):
         elif self.fusion_mode == 'add':
             return torch.sum(torch.stack(branch_ouputs), dim=0)
         else:
-            raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")    
-
+            raise ValueError("Invalid fusion mode. Choose from 'concat' or 'add'.")     
+            
 class DynamicCrossLevelAttention(nn.Module): #MSFA
     def __init__(self, 
                  ch_list, 
                  feats_size, 
                  min_size=8, 
                  squeeze_kernel=1,
-                 down_kernel=[7], 
+                 down_kernel=[3,5,7], 
                  fusion_kernel=1,
                  fusion_mode='add'
                  ):
@@ -143,7 +231,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         for ch in self.ch_list:
             self.squeeze_layers.append(
                 nn.Sequential(
-                    nn.Conv3d(in_channels=ch, out_channels=1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
+                    nn.Conv3d(ch, 1, kernel_size=squeeze_kernel, padding=squeeze_kernel//2),
                     nn.InstanceNorm3d(1, affine=True),
                     nn.GELU()
                     ))
@@ -154,7 +242,7 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
                     out_channels=1, 
                     kernel_size=self.kernel_size, 
                     in_size=feat_size, 
-                    min_size=self.min_size,
+                    min_size=8,
                     fusion_mode=self.fusion_mode  # 'concat' or 'add'
                 )
             )
@@ -200,4 +288,3 @@ class DynamicCrossLevelAttention(nn.Module): #MSFA
         
         out = attn * x
         return out
-    
