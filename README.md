@@ -8,6 +8,13 @@
 
 DCLA-UNet introduces a novel **Dynamic Cross Layer Attention (DCLA)** mechanism that dynamically selects the most relevant features from different layers of the network. This attention mechanism enhances the feature representation capability of U-Net for medical image segmentation tasks, particularly for brain tumor segmentation in BraTS datasets.
 
+
+## 🛠️ Overview
+![DCLA_UNet_Overview](/assets/DCLA_UNet_Overview.png)
+## Results
+![对比实验可视化结果](/assets/对比实验可视化结果（v3）.png)
+![对比实验可视化结果3d](/assets/对比实验可视化结果（3d）.png)
+
 ## 🚀 Quick Start
 
 ### Prerequisites
